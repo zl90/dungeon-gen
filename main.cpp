@@ -4,6 +4,7 @@
 #include <string>
 #include <random>
 #include <time.h>
+#include <iostream>
 
 enum class Grid_Item
 {
@@ -14,7 +15,10 @@ enum class Grid_Item
   grass,
   blank,
   water,
-  stone
+  stone,
+  crack,
+  cliff_wall,
+  underground_stone
 };
 
 class Grid
@@ -24,6 +28,7 @@ public:
   {
     generate_ground_tiles();
     generate_river_tiles();
+    generate_mountain_tiles();
   }
 
   void draw()
@@ -48,13 +53,13 @@ private:
   static const uint8_t DEFAULT_GRID_WIDTH = 100;
   static const uint8_t DEFAULT_GRID_HEIGHT = 50;
 
-  const char *grid_symbols = "-=|*\" ~.";
+  const char *grid_symbols = "-=|*\" ~..#+";
   std::array<std::array<Grid_Item, DEFAULT_GRID_HEIGHT>, DEFAULT_GRID_WIDTH> items;
   uint8_t selected_colour_pair = 1;
 
-  Grid_Item get_random_floor_item()
+  Grid_Item get_random_ground_item()
   {
-    const uint8_t random_int = std::rand() % 7;
+    const uint8_t random_int = std::rand() % 9;
     switch (random_int)
     {
     case 0:
@@ -67,6 +72,24 @@ private:
       return Grid_Item::floor;
     case 4:
       return Grid_Item::stone;
+    default:
+      return Grid_Item::blank;
+    }
+  }
+
+  Grid_Item get_random_underground_item()
+  {
+    const uint8_t random_int = std::rand() % 25;
+    switch (random_int)
+    {
+    case 0:
+      return Grid_Item::crack;
+    case 1:
+      return Grid_Item::crack;
+    case 2:
+      return Grid_Item::crack;
+    case 3:
+      return Grid_Item::underground_stone;
     default:
       return Grid_Item::blank;
     }
@@ -94,7 +117,7 @@ private:
     {
       for (int y = 0; y < items[x].size(); y++)
       {
-        items[x][y] = get_random_floor_item();
+        items[x][y] = get_random_ground_item();
       }
     }
   }
@@ -124,29 +147,110 @@ private:
     }
   }
 
-  void set_colour_for_item(Grid_Item item)
+  void generate_mountain_tiles()
+  {
+    int previous_cliff_x = 0;
+    for (int y = 0; y < items[0].size(); y++)
+    {
+      if (y == 0)
+      {
+        const uint8_t random_int = rand() % items.size();
+        items[random_int][y] = Grid_Item::cliff_wall;
+        previous_cliff_x = random_int;
+        for (int x = previous_cliff_x - 1; x >= 0; x--)
+        {
+          if (previous_cliff_x - x > 4)
+          {
+            items[x][y] = get_random_underground_item();
+          }
+          else
+          {
+            items[x][y] = Grid_Item::blank;
+          }
+        }
+      }
+      else
+      {
+        short random_int = rand() % 5 - 2;
+        int new_cliff_x = previous_cliff_x + random_int;
+        if (new_cliff_x >= 0 && new_cliff_x < items.size())
+        {
+          items[new_cliff_x][y] = Grid_Item::cliff_wall;
+
+          if (random_int < -1)
+          {
+            items[new_cliff_x + 1][y] = Grid_Item::cliff_wall;
+          }
+
+          for (int x = new_cliff_x - 1; x >= 0; x--)
+          {
+            if (random_int > 1 && x == new_cliff_x - 1)
+            {
+              items[x][y] = Grid_Item::cliff_wall;
+            }
+            else if (previous_cliff_x - x > 4)
+            {
+              items[x][y] = get_random_underground_item();
+            }
+            else
+            {
+              items[x][y] = Grid_Item::blank;
+            }
+          }
+          previous_cliff_x = new_cliff_x;
+        }
+        else if (new_cliff_x < 0)
+        {
+          // Do nothing to the grid. TODO: fix it so this code block is not required.
+        }
+        else if (new_cliff_x >= items.size())
+        {
+          for (int x = items.size() - 1; x >= 0; x--)
+          {
+            items[x][y] = get_random_underground_item();
+          }
+          previous_cliff_x = new_cliff_x;
+        }
+      }
+    }
+  }
+
+  void
+  set_colour_for_item(Grid_Item item)
   {
     switch (item)
     {
-    case Grid_Item::water:
-      attron(COLOR_PAIR(5));
-      selected_colour_pair = 5;
+    case Grid_Item::stone:
+      attron(COLOR_PAIR(1));
+      selected_colour_pair = 1;
       break;
     case Grid_Item::grass:
       attron(COLOR_PAIR(2));
       selected_colour_pair = 2;
       break;
-    case Grid_Item::brush:
-      attron(COLOR_PAIR(4));
-      selected_colour_pair = 4;
-      break;
     case Grid_Item::floor:
       attron(COLOR_PAIR(3));
       selected_colour_pair = 3;
       break;
-    case Grid_Item::stone:
-      attron(COLOR_PAIR(1));
-      selected_colour_pair = 1;
+    case Grid_Item::brush:
+      attron(COLOR_PAIR(4));
+      selected_colour_pair = 4;
+      break;
+    case Grid_Item::water:
+      attron(COLOR_PAIR(5));
+      selected_colour_pair = 5;
+      break;
+    case Grid_Item::cliff_wall:
+      attron(COLOR_PAIR(6));
+      selected_colour_pair = 6;
+      break;
+    case Grid_Item::crack:
+      attron(COLOR_PAIR(6));
+      selected_colour_pair = 6;
+      break;
+    case Grid_Item::underground_stone:
+      attron(COLOR_PAIR(3));
+      selected_colour_pair = 3;
       break;
     default:
       attron(COLOR_PAIR(1));
@@ -158,22 +262,25 @@ private:
   void unset_colour()
   {
     attroff(COLOR_PAIR(selected_colour_pair));
+    selected_colour_pair = 1;
   }
 };
 
 void initialise_colours()
 {
   init_color(COLOR_BLUE, 0, 300, 1000);
-  init_color(COLOR_CYAN, 100, 500, 200);
+  init_color(COLOR_CYAN, 100, 300, 100);
   init_color(COLOR_YELLOW, 350, 175, 0);
-  init_color(COLOR_GREEN, 100, 250, 50);
+  init_color(COLOR_GREEN, 300, 500, 150);
   init_color(COLOR_WHITE, 200, 200, 200);
+  init_color(COLOR_MAGENTA, 600, 50, 180);
 
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
   init_pair(2, COLOR_GREEN, COLOR_BLACK);
   init_pair(3, COLOR_YELLOW, COLOR_BLACK);
   init_pair(4, COLOR_CYAN, COLOR_BLACK);
   init_pair(5, COLOR_BLUE, COLOR_BLACK);
+  init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
 }
 
 int main()
