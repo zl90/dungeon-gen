@@ -12,8 +12,9 @@ enum class Grid_Item
   wall_vertical,
   brush,
   grass,
-  floor_4,
-  water
+  blank,
+  water,
+  stone
 };
 
 class Grid
@@ -23,6 +24,52 @@ public:
   {
     generate_ground_tiles();
     generate_river_tiles();
+  }
+
+  void draw()
+  {
+    int row, col;
+    getmaxyx(stdscr, row, col);
+
+    for (int y = 0; y < items[0].size(); y++)
+    {
+      for (int x = 0; x < items.size(); x++)
+      {
+        set_colour_for_item(items[x][y]);
+        mvaddch(row / 2 - y + items[0].size() / 2, col / 2 - items.size() / 2 + x, grid_symbols[(int)items[x][y]]);
+        unset_colour();
+      }
+
+      addch('\n');
+    }
+  }
+
+private:
+  static const uint8_t DEFAULT_GRID_WIDTH = 100;
+  static const uint8_t DEFAULT_GRID_HEIGHT = 50;
+
+  const char *grid_symbols = "-=|*\" ~.";
+  std::array<std::array<Grid_Item, DEFAULT_GRID_HEIGHT>, DEFAULT_GRID_WIDTH> items;
+  uint8_t selected_colour_pair = 1;
+
+  Grid_Item get_random_floor_item()
+  {
+    const uint8_t random_int = std::rand() % 7;
+    switch (random_int)
+    {
+    case 0:
+      return Grid_Item::floor;
+    case 1:
+      return Grid_Item::brush;
+    case 2:
+      return Grid_Item::grass;
+    case 3:
+      return Grid_Item::floor;
+    case 4:
+      return Grid_Item::stone;
+    default:
+      return Grid_Item::blank;
+    }
   }
 
   bool is_above_river_tile(int x, int y)
@@ -83,73 +130,45 @@ public:
     {
     case Grid_Item::water:
       attron(COLOR_PAIR(5));
+      selected_colour_pair = 5;
       break;
     case Grid_Item::grass:
       attron(COLOR_PAIR(2));
+      selected_colour_pair = 2;
       break;
     case Grid_Item::brush:
       attron(COLOR_PAIR(4));
+      selected_colour_pair = 4;
       break;
     case Grid_Item::floor:
       attron(COLOR_PAIR(3));
+      selected_colour_pair = 3;
+      break;
+    case Grid_Item::stone:
+      attron(COLOR_PAIR(1));
+      selected_colour_pair = 1;
       break;
     default:
       attron(COLOR_PAIR(1));
+      selected_colour_pair = 1;
       break;
     }
   }
 
   void unset_colour()
   {
-    attron(COLOR_PAIR(1));
+    attroff(COLOR_PAIR(selected_colour_pair));
   }
-
-  void draw()
-  {
-    int row, col;
-    getmaxyx(stdscr, row, col);
-
-    for (int y = 0; y < items[0].size(); y++)
-    {
-      for (int x = 0; x < items.size(); x++)
-      {
-        set_colour_for_item(items[x][y]);
-        mvaddch(row / 2 - y + items[0].size() / 2, col / 2 - items.size() / 2 + x, grid_symbols[(int)items[x][y]]);
-        unset_colour();
-      }
-
-      addch('\n');
-    }
-  }
-
-  Grid_Item get_random_floor_item()
-  {
-    const uint8_t random_int = std::rand() % 4;
-    switch (random_int)
-    {
-    case 0:
-      return Grid_Item::floor;
-    case 1:
-      return Grid_Item::brush;
-    case 2:
-      return Grid_Item::grass;
-    case 3:
-      return Grid_Item::floor_4;
-    default:
-      return Grid_Item::floor;
-    }
-  }
-
-private:
-  static const uint8_t DEFAULT_GRID_WIDTH = 100;
-  static const uint8_t DEFAULT_GRID_HEIGHT = 50;
-
-  const char *grid_symbols = "-=|*\" ~";
-  std::array<std::array<Grid_Item, DEFAULT_GRID_HEIGHT>, DEFAULT_GRID_WIDTH> items;
 };
 
 void initialise_colours()
 {
+  init_color(COLOR_BLUE, 0, 300, 1000);
+  init_color(COLOR_CYAN, 100, 500, 200);
+  init_color(COLOR_YELLOW, 350, 175, 0);
+  init_color(COLOR_GREEN, 100, 250, 50);
+  init_color(COLOR_WHITE, 200, 200, 200);
+
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
   init_pair(2, COLOR_GREEN, COLOR_BLACK);
   init_pair(3, COLOR_YELLOW, COLOR_BLACK);
@@ -177,6 +196,9 @@ int main()
 
     input = getch();
   }
+
+  refresh();
+
   endwin();
   return 0;
 }
