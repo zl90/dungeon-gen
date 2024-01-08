@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE_EXTENDED
+
 #include <ncurses.h>
 #include <stdio.h>
 #include <array>
@@ -5,6 +7,8 @@
 #include <random>
 #include <time.h>
 #include <iostream>
+#include <wchar.h>
+#include <locale.h>
 
 enum class Grid_Item
 {
@@ -18,8 +22,11 @@ enum class Grid_Item
   stone,
   crack,
   cliff_wall,
-  underground_stone
+  underground_stone,
+  water_2
 };
+
+constexpr std::array<const wchar_t *, 13> grid_symbols = {L"¨", L"=", L"|", L"*", L"\"", L" ", L"~", L"•", L".", L"▒", L"×", L"˜"};
 
 class Grid
 {
@@ -41,7 +48,7 @@ public:
       for (int x = 0; x < items.size(); x++)
       {
         set_colour_for_item(items[x][y]);
-        mvaddch(row / 2 - y + items[0].size() / 2, col / 2 - items.size() / 2 + x, grid_symbols[(int)items[x][y]]);
+        mvaddwstr(row / 2 - y + items[0].size() / 2, col / 2 - items.size() / 2 + x, grid_symbols[(int)items[x][y]]);
         unset_colour();
       }
 
@@ -50,10 +57,9 @@ public:
   }
 
 private:
-  static const uint8_t DEFAULT_GRID_WIDTH = 100;
-  static const uint8_t DEFAULT_GRID_HEIGHT = 50;
+  static const uint8_t DEFAULT_GRID_WIDTH = 128;
+  static const uint8_t DEFAULT_GRID_HEIGHT = 32;
 
-  const char *grid_symbols = "-=|*\" ~..#+";
   std::array<std::array<Grid_Item, DEFAULT_GRID_HEIGHT>, DEFAULT_GRID_WIDTH> items;
   uint8_t selected_colour_pair = 1;
 
@@ -95,19 +101,34 @@ private:
     }
   }
 
+  Grid_Item get_random_water_tile()
+  {
+    const short random_int = rand() % 2;
+    if (random_int)
+    {
+      return Grid_Item::water;
+    }
+    return Grid_Item::water_2;
+  }
+
+  bool is_water_tile(int x, int y)
+  {
+    return items[x][y] == Grid_Item::water || items[x][y] == Grid_Item::water_2;
+  }
+
   bool is_above_river_tile(int x, int y)
   {
     if (x == 0)
     {
-      return items[x][y - 1] == Grid_Item::water || items[x + 1][y - 1] == Grid_Item::water;
+      return is_water_tile(x, y - 1) || is_water_tile(x + 1, y - 1);
     }
     else if (x == items.size() - 1)
     {
-      return items[x][y - 1] == Grid_Item::water || items[x - 1][y - 1] == Grid_Item::water;
+      return is_water_tile(x, y - 1) || is_water_tile(x - 1, y - 1);
     }
     else
     {
-      return items[x][y - 1] == Grid_Item::water || items[x - 1][y - 1] == Grid_Item::water || items[x + 1][y - 1] == Grid_Item::water;
+      return is_water_tile(x, y - 1) || is_water_tile(x - 1, y - 1) || is_water_tile(x + 1, y - 1);
     }
   }
 
@@ -129,7 +150,7 @@ private:
       if (y == 0)
       {
         const uint8_t random_int = rand() % items.size();
-        items[random_int][y] = Grid_Item::water;
+        items[random_int][y] = get_random_water_tile();
       }
       else
       {
@@ -139,7 +160,7 @@ private:
           {
             if (rand() % 2 == 1)
             {
-              items[x][y] = Grid_Item::water;
+              items[x][y] = get_random_water_tile();
             }
           }
         }
@@ -240,6 +261,10 @@ private:
       attron(COLOR_PAIR(5));
       selected_colour_pair = 5;
       break;
+    case Grid_Item::water_2:
+      attron(COLOR_PAIR(5));
+      selected_colour_pair = 5;
+      break;
     case Grid_Item::cliff_wall:
       attron(COLOR_PAIR(6));
       selected_colour_pair = 6;
@@ -285,6 +310,7 @@ void initialise_colours()
 
 int main()
 {
+  setlocale(LC_ALL, "");
   std::srand(time(nullptr));
 
   initscr();
