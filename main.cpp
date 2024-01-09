@@ -26,7 +26,7 @@ enum class Grid_Item
   water_2
 };
 
-constexpr std::array<const wchar_t *, 13> grid_symbols = {L"¨", L"=", L"|", L"*", L"\"", L" ", L"~", L"•", L".", L"▒", L"×", L"˜"};
+constexpr std::array<const wchar_t *, 13> grid_symbols = {L"¨", L"=", L"|", L",", L"\"", L" ", L"~", L"•", L".", L"▓", L"%", L"˜"};
 
 class Grid
 {
@@ -65,7 +65,7 @@ private:
 
   Grid_Item get_random_ground_item()
   {
-    const uint8_t random_int = std::rand() % 9;
+    const uint8_t random_int = std::rand() % 6;
     switch (random_int)
     {
     case 0:
@@ -85,16 +85,12 @@ private:
 
   Grid_Item get_random_underground_item()
   {
-    const uint8_t random_int = std::rand() % 25;
+    const uint8_t random_int = std::rand() % 120;
     switch (random_int)
     {
     case 0:
       return Grid_Item::crack;
     case 1:
-      return Grid_Item::crack;
-    case 2:
-      return Grid_Item::crack;
-    case 3:
       return Grid_Item::underground_stone;
     default:
       return Grid_Item::blank;
