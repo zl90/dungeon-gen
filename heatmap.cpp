@@ -51,23 +51,23 @@ void HeatMap::smoothen_() {
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (i == 0 && j == 0) {
-        // top left corner
+        // @TODO: top left corner
       } else if (i == width_ - 1 && j == 0) {
-        // top right corner
+        // @TODO: top right corner
       } else if (i == 0 && j == height_ - 1) {
-        // bottom left corner
+        // @TODO: bottom left corner
       } else if (i == width_ - 1 && j == height_ - 1) {
-        // bottom right corner
+        // @TODO: bottom right corner
       } else if (i == 0) {
-        // leftmost column
+        // @TODO: leftmost column
       } else if (i == width_ - 1) {
-        // rightmost column
+        // @TODO: rightmost column
       } else if (j == 0) {
-        // top row
+        // @TODO: top row
       } else if (j == height_ - 1) {
-        // bottom row
+        // @TODO: bottom row
       } else [[likely]] {
-        // normal convolution
+        // @TODO: normal convolution
         if (heatmap_[i][j] != 1.0f) {
           float average = (heatmap_[i - 1][j + 1] + heatmap_[i][j + 1] +
                            heatmap_[i + 1][j + 1] + heatmap_[i - 1][j] +
