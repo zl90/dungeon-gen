@@ -11,18 +11,14 @@ HeatMap::HeatMap(unsigned int x, unsigned int y) {
 
   float hotspot_probability = 3;
 
-  heatmap_ = std::vector<std::vector<float>>(width_,
-                                             std::vector<float>(height_, 0.0f));
+  heatmap_ = std::vector<std::vector<float>>(
+      width_, std::vector<float>(height_, lowest_depth_));
 
-  for (unsigned int i = 0; i < width_; i++) {
-    for (unsigned int j = 0; j < height_; j++) {
-      if (rand() % 100 < hotspot_probability) {
-        heatmap_[i][j] = 1.0f;
-      }
-    }
-  }
+  insert_hotspots_();
 
-  for (int k = 0; k < 5; k++) {
+  int smoothen_iteration_count = (rand() % 8) + 3;
+
+  for (int k = 0; k < smoothen_iteration_count; k++) {
     smoothen_();
   }
 }
@@ -34,7 +30,7 @@ void HeatMap::print() {
         std::cout << "\033[1;31m";
       } else if (heatmap_[i][j] >= 0.5) {
         std::cout << "\033[1;33m";
-      } else if (heatmap_[i][j] >= 0.2) {
+      } else if (heatmap_[i][j] >= 0.15) {
         std::cout << "\033[1;32m";
       } else {
         std::cout << "\033[1;34m";
@@ -47,36 +43,78 @@ void HeatMap::print() {
   std::cout << '\n';
 }
 
+void HeatMap::insert_hotspots_() {
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (rand() % 100 < hotspot_percentage_) {
+        heatmap_[i][j] = highest_depth_;
+      }
+    }
+  }
+}
+
 void HeatMap::smoothen_() {
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
-      if (i == 0 && j == 0) {
-        // @TODO: top left corner
-      } else if (i == width_ - 1 && j == 0) {
-        // @TODO: top right corner
-      } else if (i == 0 && j == height_ - 1) {
-        // @TODO: bottom left corner
-      } else if (i == width_ - 1 && j == height_ - 1) {
-        // @TODO: bottom right corner
-      } else if (i == 0) {
-        // @TODO: leftmost column
-      } else if (i == width_ - 1) {
-        // @TODO: rightmost column
-      } else if (j == 0) {
-        // @TODO: top row
-      } else if (j == height_ - 1) {
-        // @TODO: bottom row
-      } else [[likely]] {
-        // @TODO: normal convolution
-        if (heatmap_[i][j] != 1.0f) {
-          float average = (heatmap_[i - 1][j + 1] + heatmap_[i][j + 1] +
-                           heatmap_[i + 1][j + 1] + heatmap_[i - 1][j] +
-                           heatmap_[i + 1][j] + heatmap_[i - 1][j - 1] +
-                           heatmap_[i][j - 1] + heatmap_[i + 1][j - 1]) /
-                          8.0f;
-          float increment = average * ((rand() % 100) + 1) / 100.0f;
-          heatmap_[i][j] = std::min(heatmap_[i][j] + increment, 1.0f);
+      if (heatmap_[i][j] < highest_depth_) [[likely]] {
+        float convolution_average = 0.0f;
+
+        if (i == 0 && j == 0) {
+          // Top left corner
+          convolution_average = (heatmap_[i + 1][j] + heatmap_[i + 1][j + 1] +
+                                 heatmap_[i][j + 1]) /
+                                3.0f;
+        } else if (i == width_ - 1 && j == 0) {
+          // Top right corner
+          convolution_average = (heatmap_[i][j + 1] + heatmap_[i - 1][j] +
+                                 heatmap_[i - 1][j + 1]) /
+                                3.0f;
+        } else if (i == 0 && j == height_ - 1) {
+          // Bottom left corner
+          convolution_average = (heatmap_[i][j - 1] + heatmap_[i + 1][j] +
+                                 heatmap_[i + 1][j - 1]) /
+                                3.0f;
+        } else if (i == width_ - 1 && j == height_ - 1) {
+          // Bottom right corner
+          convolution_average = (heatmap_[i][j - 1] + heatmap_[i - 1][j] +
+                                 heatmap_[i - 1][j - 1]) /
+                                3.0f;
+        } else if (i == 0) {
+          // Leftmost column
+          convolution_average = (heatmap_[i][j + 1] + heatmap_[i + 1][j + 1] +
+                                 heatmap_[i + 1][j] + heatmap_[i][j - 1] +
+                                 heatmap_[i + 1][j - 1]) /
+                                5.0f;
+        } else if (i == width_ - 1) {
+          // Rightmost column
+          convolution_average = (heatmap_[i - 1][j + 1] + heatmap_[i][j + 1] +
+                                 heatmap_[i - 1][j] + heatmap_[i - 1][j - 1] +
+                                 heatmap_[i][j - 1]) /
+                                5.0f;
+        } else if (j == 0) {
+          // Top row
+          convolution_average = (heatmap_[i - 1][j] + heatmap_[i + 1][j] +
+                                 heatmap_[i - 1][j + 1] + heatmap_[i][j + 1] +
+                                 heatmap_[i + 1][j + 1]) /
+                                5.0f;
+        } else if (j == height_ - 1) {
+          // Bottom row
+          convolution_average = (heatmap_[i - 1][j - 1] + heatmap_[i][j - 1] +
+                                 heatmap_[i + 1][j - 1] + heatmap_[i - 1][j] +
+                                 heatmap_[i + 1][j]) /
+                                5.0f;
+        } else [[likely]] {
+          // Normal grid point
+          convolution_average = (heatmap_[i - 1][j + 1] + heatmap_[i][j + 1] +
+                                 heatmap_[i + 1][j + 1] + heatmap_[i - 1][j] +
+                                 heatmap_[i + 1][j] + heatmap_[i - 1][j - 1] +
+                                 heatmap_[i][j - 1] + heatmap_[i + 1][j - 1]) /
+                                8.0f;
         }
+
+        float modifier_percentage = ((rand() % 100) + 1) / 100.0f;
+        float increment = convolution_average * modifier_percentage;
+        heatmap_[i][j] = std::min(heatmap_[i][j] + increment, highest_depth_);
       }
     }
   }

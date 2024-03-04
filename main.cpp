@@ -279,7 +279,7 @@ int main() {
   endwin();
 
   // @TODO: Remove this later. This is for testing heatmaps:
-  HeatMap map(48, 32);
+  HeatMap map(54, 32);
   map.print();
 
   return 0;
