@@ -1,7 +1,9 @@
+#include <memory>
+#ifndef _XOPEN_SOURCE_EXTENDED
 #define _XOPEN_SOURCE_EXTENDED
+#endif
 
 #include "heatmap.h"
-#include <array>
 #include <iostream>
 #include <locale.h>
 #include <ncurses.h>
@@ -31,22 +33,28 @@ constexpr std::array<const wchar_t *, 13> grid_symbols = {
 
 class Grid {
 public:
-  Grid() {
-    generate_ground_tiles();
-    generate_river_tiles();
-    generate_mountain_tiles();
+  Grid(unsigned int width, unsigned int height)
+      : terrain_heatmap_(width, height), width_(width), height_(height) {
+
+    items_ = std::vector<std::vector<Grid_Item>>(
+        width, std::vector<Grid_Item>(height, Grid_Item::floor));
+
+    // generate_ground_tiles();
+    // generate_river_tiles();
+    // generate_mountain_tiles();
+    map_terrain_();
   }
 
   void draw() {
     int row, col;
     getmaxyx(stdscr, row, col);
 
-    for (int y = 0; y < items[0].size(); y++) {
-      for (int x = 0; x < items.size(); x++) {
-        set_colour_for_item(items[x][y]);
-        mvaddwstr(row / 2 - y + items[0].size() / 2,
-                  col / 2 - items.size() / 2 + x,
-                  grid_symbols[(int)items[x][y]]);
+    for (int y = 0; y < items_[0].size(); y++) {
+      for (int x = 0; x < items_.size(); x++) {
+        set_colour_for_item(items_[x][y]);
+        mvaddwstr(row / 2 - y + items_[0].size() / 2,
+                  col / 2 - items_.size() / 2 + x,
+                  grid_symbols[(int)items_[x][y]]);
         unset_colour();
       }
 
@@ -55,12 +63,28 @@ public:
   }
 
 private:
-  static const uint8_t DEFAULT_GRID_WIDTH = 128;
-  static const uint8_t DEFAULT_GRID_HEIGHT = 32;
+  unsigned int width_;
+  unsigned int height_;
 
-  std::array<std::array<Grid_Item, DEFAULT_GRID_HEIGHT>, DEFAULT_GRID_WIDTH>
-      items;
-  uint8_t selected_colour_pair = 1;
+  std::vector<std::vector<Grid_Item>> items_;
+
+  uint8_t selected_colour_pair_ = 1;
+
+  HeatMap terrain_heatmap_;
+
+  void map_terrain_() {
+    for (unsigned int i = 0; i < width_; i++) {
+      for (unsigned int j = 0; j < height_; j++) {
+        if (terrain_heatmap_[i][j] > 0.8f) {
+          items_[i][j] = get_random_underground_item();
+        } else if (terrain_heatmap_[i][j] > 0.4f) {
+          items_[i][j] = Grid_Item::cliff_wall;
+        } else {
+          items_[i][j] = get_random_ground_item();
+        }
+      }
+    }
+  }
 
   Grid_Item get_random_ground_item() {
     const uint8_t random_int = std::rand() % 6;
@@ -101,13 +125,14 @@ private:
   }
 
   bool is_water_tile(int x, int y) {
-    return items[x][y] == Grid_Item::water || items[x][y] == Grid_Item::water_2;
+    return items_[x][y] == Grid_Item::water ||
+           items_[x][y] == Grid_Item::water_2;
   }
 
   bool is_above_river_tile(int x, int y) {
     if (x == 0) {
       return is_water_tile(x, y - 1) || is_water_tile(x + 1, y - 1);
-    } else if (x == items.size() - 1) {
+    } else if (x == items_.size() - 1) {
       return is_water_tile(x, y - 1) || is_water_tile(x - 1, y - 1);
     } else {
       return is_water_tile(x, y - 1) || is_water_tile(x - 1, y - 1) ||
@@ -116,23 +141,23 @@ private:
   }
 
   void generate_ground_tiles() {
-    for (int x = 0; x < items.size(); x++) {
-      for (int y = 0; y < items[x].size(); y++) {
-        items[x][y] = get_random_ground_item();
+    for (int x = 0; x < items_.size(); x++) {
+      for (int y = 0; y < items_[x].size(); y++) {
+        items_[x][y] = get_random_ground_item();
       }
     }
   }
 
   void generate_river_tiles() {
-    for (int y = 0; y < items[0].size(); y++) {
+    for (int y = 0; y < items_[0].size(); y++) {
       if (y == 0) {
-        const uint8_t random_int = rand() % items.size();
-        items[random_int][y] = get_random_water_tile();
+        const uint8_t random_int = rand() % items_.size();
+        items_[random_int][y] = get_random_water_tile();
       } else {
-        for (int x = 0; x < items.size(); x++) {
+        for (int x = 0; x < items_.size(); x++) {
           if (is_above_river_tile(x, y)) {
             if (rand() % 2 == 1) {
-              items[x][y] = get_random_water_tile();
+              items_[x][y] = get_random_water_tile();
             }
           }
         }
@@ -142,44 +167,44 @@ private:
 
   void generate_mountain_tiles() {
     int previous_cliff_x = 0;
-    for (int y = 0; y < items[0].size(); y++) {
+    for (int y = 0; y < items_[0].size(); y++) {
       if (y == 0) {
-        const uint8_t random_int = rand() % items.size();
-        items[random_int][y] = Grid_Item::cliff_wall;
+        const uint8_t random_int = rand() % items_.size();
+        items_[random_int][y] = Grid_Item::cliff_wall;
         previous_cliff_x = random_int;
         for (int x = previous_cliff_x - 1; x >= 0; x--) {
           if (previous_cliff_x - x > 4) {
-            items[x][y] = get_random_underground_item();
+            items_[x][y] = get_random_underground_item();
           } else {
-            items[x][y] = Grid_Item::blank;
+            items_[x][y] = Grid_Item::blank;
           }
         }
       } else {
         short random_int = rand() % 5 - 2;
         int new_cliff_x = previous_cliff_x + random_int;
-        if (new_cliff_x >= 0 && new_cliff_x < items.size()) {
-          items[new_cliff_x][y] = Grid_Item::cliff_wall;
+        if (new_cliff_x >= 0 && new_cliff_x < items_.size()) {
+          items_[new_cliff_x][y] = Grid_Item::cliff_wall;
 
           if (random_int < -1) {
-            items[new_cliff_x + 1][y] = Grid_Item::cliff_wall;
+            items_[new_cliff_x + 1][y] = Grid_Item::cliff_wall;
           }
 
           for (int x = new_cliff_x - 1; x >= 0; x--) {
             if (random_int > 1 && x == new_cliff_x - 1) {
-              items[x][y] = Grid_Item::cliff_wall;
+              items_[x][y] = Grid_Item::cliff_wall;
             } else if (previous_cliff_x - x > 4) {
-              items[x][y] = get_random_underground_item();
+              items_[x][y] = get_random_underground_item();
             } else {
-              items[x][y] = Grid_Item::blank;
+              items_[x][y] = Grid_Item::blank;
             }
           }
           previous_cliff_x = new_cliff_x;
         } else if (new_cliff_x < 0) {
           // Do nothing to the grid. TODO: fix it so this code block is not
           // required.
-        } else if (new_cliff_x >= items.size()) {
-          for (int x = items.size() - 1; x >= 0; x--) {
-            items[x][y] = get_random_underground_item();
+        } else if (new_cliff_x >= items_.size()) {
+          for (int x = items_.size() - 1; x >= 0; x--) {
+            items_[x][y] = get_random_underground_item();
           }
           previous_cliff_x = new_cliff_x;
         }
@@ -191,50 +216,50 @@ private:
     switch (item) {
     case Grid_Item::stone:
       attron(COLOR_PAIR(1));
-      selected_colour_pair = 1;
+      selected_colour_pair_ = 1;
       break;
     case Grid_Item::grass:
       attron(COLOR_PAIR(2));
-      selected_colour_pair = 2;
+      selected_colour_pair_ = 2;
       break;
     case Grid_Item::floor:
       attron(COLOR_PAIR(3));
-      selected_colour_pair = 3;
+      selected_colour_pair_ = 3;
       break;
     case Grid_Item::brush:
       attron(COLOR_PAIR(4));
-      selected_colour_pair = 4;
+      selected_colour_pair_ = 4;
       break;
     case Grid_Item::water:
       attron(COLOR_PAIR(5));
-      selected_colour_pair = 5;
+      selected_colour_pair_ = 5;
       break;
     case Grid_Item::water_2:
       attron(COLOR_PAIR(5));
-      selected_colour_pair = 5;
+      selected_colour_pair_ = 5;
       break;
     case Grid_Item::cliff_wall:
       attron(COLOR_PAIR(6));
-      selected_colour_pair = 6;
+      selected_colour_pair_ = 6;
       break;
     case Grid_Item::crack:
       attron(COLOR_PAIR(6));
-      selected_colour_pair = 6;
+      selected_colour_pair_ = 6;
       break;
     case Grid_Item::underground_stone:
       attron(COLOR_PAIR(3));
-      selected_colour_pair = 3;
+      selected_colour_pair_ = 3;
       break;
     default:
       attron(COLOR_PAIR(1));
-      selected_colour_pair = 1;
+      selected_colour_pair_ = 1;
       break;
     }
   }
 
   void unset_colour() {
-    attroff(COLOR_PAIR(selected_colour_pair));
-    selected_colour_pair = 1;
+    attroff(COLOR_PAIR(selected_colour_pair_));
+    selected_colour_pair_ = 1;
   }
 };
 
@@ -266,7 +291,7 @@ int main() {
   int input;
 
   while (input != 'q' && input != 27) {
-    Grid g;
+    Grid g(128, 32);
     g.draw();
 
     refresh();
@@ -277,10 +302,6 @@ int main() {
   refresh();
 
   endwin();
-
-  // @TODO: Remove this later. This is for testing heatmaps:
-  HeatMap map(54, 32);
-  map.print();
 
   return 0;
 }
