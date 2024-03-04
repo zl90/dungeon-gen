@@ -3,9 +3,11 @@
 
 class HeatMap {
 public:
-  HeatMap(unsigned int x, unsigned int y);
+  HeatMap(const unsigned int x, const unsigned int y);
 
   void print();
+
+  std::vector<float> &operator[](int i) { return heatmap_[i]; };
 
 private:
   /** Randomly inserts hotspots into the heatmap. A hotspot is defined as a grid
