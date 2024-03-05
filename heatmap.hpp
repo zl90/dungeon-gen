@@ -25,5 +25,5 @@ private:
   unsigned int height_;
   const float highest_depth_ = 1.0f;
   const float lowest_depth_ = 0.0f;
-  const float hotspot_percentage_ = 3.0f;
+  const int max_hotspot_percentage_ = 2;
 };

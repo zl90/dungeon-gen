@@ -1,22 +1,19 @@
-#include "heatmap.h"
+#include "heatmap.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <random>
-#include <vector>
 
 HeatMap::HeatMap(unsigned int x, unsigned int y) {
   width_ = x;
   height_ = y;
-
-  float hotspot_probability = 3;
 
   heatmap_ = std::vector<std::vector<float>>(
       width_, std::vector<float>(height_, lowest_depth_));
 
   insert_hotspots_();
 
-  int smoothen_iteration_count = (rand() % 8) + 3;
+  int smoothen_iteration_count = (rand() % 6) + 9;
 
   for (int k = 0; k < smoothen_iteration_count; k++) {
     smoothen_();
@@ -44,9 +41,11 @@ void HeatMap::print() {
 }
 
 void HeatMap::insert_hotspots_() {
+  int hotspot_percentage = (rand() % (max_hotspot_percentage_ * 10)) + 1;
+
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
-      if (rand() % 100 < hotspot_percentage_) {
+      if (((rand() % 1000) + 1) < hotspot_percentage) {
         heatmap_[i][j] = highest_depth_;
       }
     }
