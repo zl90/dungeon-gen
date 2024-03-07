@@ -1,4 +1,4 @@
-#include "heatmap.hpp"
+#include "../include/heatmap.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>

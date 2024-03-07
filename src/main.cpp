@@ -9,7 +9,7 @@
 #include <random>
 #include <time.h>
 
-#include "grid.hpp"
+#include "./include/grid.hpp"
 
 void initialise_colours() {
   init_color(COLOR_BLUE, 0, 300, 1000);
@@ -39,7 +39,7 @@ int main() {
   int input;
 
   while (input != 'q' && input != 27) {
-    Grid g(128, 32);
+    Grid g(84, 48);
     g.draw();
 
     refresh();

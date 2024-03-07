@@ -4,8 +4,8 @@
 #include <vector>
 #include <wchar.h>
 
-#include "grid.hpp"
-#include "heatmap.hpp"
+#include "../include/grid.hpp"
+#include "../include/heatmap.hpp"
 
 constexpr std::array<const wchar_t *, 13> grid_symbols = {
     L"¨", L"=", L"|", L",", L"\"", L" ", L"~", L"•", L".", L"▓", L"%", L"˜"};
