@@ -23,6 +23,11 @@ private:
 
   void map_terrain_();
 
+  GridItem generate_mountain_grid_item();
+  GridItem generate_foothill_grid_item();
+  GridItem generate_ocean_grid_item();
+  GridItem generate_forest_grid_item();
+
   void set_colour_for_item(GridItem item);
 
   void unset_colour();

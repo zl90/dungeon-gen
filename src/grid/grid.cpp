@@ -9,10 +9,6 @@
 #include "../include/heatmap.hpp"
 #include "../include/terrain.hpp"
 
-constexpr std::array<const wchar_t *, 13> grid_symbols = {
-    L"¶", L"º", L"|", L",", L"\"", L" ", L"~", L"•", L"º", L"▓", L"%", L"˜",
-};
-
 std::unordered_map<ColourType, Colour> GridItem::colours = {
     {ColourType::White, {900, 900, 900, 1}},
     {ColourType::Blue, {50, 403, 768, 2}},
@@ -32,15 +28,7 @@ std::unordered_map<ColourType, Colour> GridItem::colours = {
 
 Grid::Grid(unsigned int width, unsigned int height)
     : terrain_heatmap_(width, height), width_(width), height_(height) {
-
-  GridItem ocean;
-  ocean.icon = Terrain::terrain_icons[TerrainType::Ocean];
-  ocean.colour = GridItem::colours[ColourType::Blue];
-  Terrain ocean_terrain;
-  ocean_terrain.type = TerrainType::Ocean;
-  ocean_terrain.temperature = TemperatureType::Cold;
-  ocean.terrain = ocean_terrain;
-
+  GridItem ocean = generate_ocean_grid_item();
   items_ = std::vector<std::vector<GridItem>>(
       width, std::vector<GridItem>(height, ocean));
 
@@ -55,10 +43,9 @@ void Grid::draw() {
     for (int x = 0; x < items_.size(); x++) {
       set_colour_for_item(items_[x][y]);
       mvaddwstr(row / 2 - y + items_[0].size() / 2,
-                col / 2 - items_.size() / 2 + x, items_[x][y].icon);
+                col / 2 - items_.size() / 2 + x, +items_[x][y].icon);
       unset_colour();
     }
-
     addch('\n');
   }
 }
@@ -66,40 +53,76 @@ void Grid::draw() {
 void Grid::map_terrain_() {
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
-      if (terrain_heatmap_[i][j] > 0.9f) {
-        GridItem mountain;
-        mountain.icon = Terrain::terrain_icons[TerrainType::Mountain];
-        mountain.colour = GridItem::colours[ColourType::Grey];
-        Terrain mountain_terrain;
-        mountain_terrain.type = TerrainType::Mountain;
-        mountain_terrain.temperature = TemperatureType::Frigid;
-        mountain.terrain = mountain_terrain;
-
-        items_[i][j] = mountain;
-      } else if (terrain_heatmap_[i][j] > 0.6f) {
-        GridItem foothill;
-        foothill.icon = Terrain::terrain_icons[TerrainType::Foothill];
-        foothill.colour = GridItem::colours[ColourType::Beige];
-        Terrain foothill_terrain;
-        foothill_terrain.type = TerrainType::Foothill;
-        foothill_terrain.temperature = TemperatureType::Cold;
-        foothill.terrain = foothill_terrain;
-
-        items_[i][j] = foothill;
+      if (terrain_heatmap_[i][j] > 0.95f) {
+        items_[i][j] = generate_mountain_grid_item();
+      } else if (terrain_heatmap_[i][j] > 0.75f) {
+        items_[i][j] = generate_foothill_grid_item();
       } else if (terrain_heatmap_[i][j] > 0.05f) {
-        GridItem conifer_forest;
-        conifer_forest.icon =
-            Terrain::terrain_icons[TerrainType::Conifer_Forest];
-        conifer_forest.colour = GridItem::colours[ColourType::Green];
-        Terrain conifer_forest_terrain;
-        conifer_forest_terrain.type = TerrainType::Conifer_Forest;
-        conifer_forest_terrain.temperature = TemperatureType::Temperate;
-        conifer_forest.terrain = conifer_forest_terrain;
-
-        items_[i][j] = conifer_forest;
+        items_[i][j] = generate_forest_grid_item();
       }
     }
   }
+}
+
+GridItem Grid::generate_mountain_grid_item() {
+  GridItem mountain;
+  mountain.icon = Terrain::terrain_icons[TerrainType::Mountain];
+  mountain.colour = GridItem::colours[ColourType::Grey];
+  Terrain mountain_terrain;
+  mountain_terrain.type = TerrainType::Mountain;
+  mountain_terrain.temperature = TemperatureType::Frigid;
+  mountain.terrain = mountain_terrain;
+  return mountain;
+}
+
+GridItem Grid::generate_foothill_grid_item() {
+  GridItem foothill;
+  foothill.icon = Terrain::terrain_icons[TerrainType::Foothill];
+  foothill.colour = GridItem::colours[ColourType::Beige];
+  Terrain foothill_terrain;
+  foothill_terrain.type = TerrainType::Foothill;
+  foothill_terrain.temperature = TemperatureType::Cold;
+  foothill.terrain = foothill_terrain;
+  return foothill;
+}
+
+GridItem Grid::generate_forest_grid_item() {
+  int random_choice = rand() % 3;
+  TerrainType forest_type;
+  switch (random_choice) {
+  case 0:
+    forest_type = TerrainType::Conifer_Forest;
+    break;
+  case 1:
+    forest_type = TerrainType::Ash_Forest;
+    break;
+  case 2:
+    forest_type = TerrainType::Pine_Forest;
+    break;
+  default:
+    forest_type = TerrainType::Conifer_Forest;
+    break;
+  }
+
+  GridItem forest;
+  forest.icon = Terrain::terrain_icons[forest_type];
+  forest.colour = GridItem::colours[ColourType::Green];
+  Terrain forest_terrain;
+  forest_terrain.type = forest_type;
+  forest_terrain.temperature = TemperatureType::Temperate;
+  forest.terrain = forest_terrain;
+  return forest;
+}
+
+GridItem Grid::generate_ocean_grid_item() {
+  GridItem ocean;
+  ocean.icon = Terrain::terrain_icons[TerrainType::Ocean];
+  ocean.colour = GridItem::colours[ColourType::Blue];
+  Terrain ocean_terrain;
+  ocean_terrain.type = TerrainType::Ocean;
+  ocean_terrain.temperature = TemperatureType::Cold;
+  ocean.terrain = ocean_terrain;
+  return ocean;
 }
 
 void Grid::set_colour_for_item(GridItem item) {
@@ -107,8 +130,8 @@ void Grid::set_colour_for_item(GridItem item) {
   int g = item.colour.g;
   int b = item.colour.b;
   selected_colour_pair_ = item.colour.colour_pair_number;
-
   const int CUSTOM_COLOR = COLOR_WHITE + selected_colour_pair_;
+
   init_color(CUSTOM_COLOR, r, g, b);
   init_pair(selected_colour_pair_, CUSTOM_COLOR, COLOR_BLACK);
 
