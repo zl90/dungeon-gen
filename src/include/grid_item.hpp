@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <wchar.h>
 
 #include "history.hpp"
 #include "item.hpp"
@@ -24,4 +25,6 @@ struct GridItem {
 
   /** Contains all units currently situated on this grid tile. */
   std::vector<Unit> occupants;
+
+  const wchar_t *icon;
 };

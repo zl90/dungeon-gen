@@ -1,22 +1,9 @@
 #pragma once
-#include "heatmap.hpp"
 #include <cstdint>
 #include <vector>
 
-enum class Grid_Item {
-  floor,
-  wall_horizontal,
-  wall_vertical,
-  brush,
-  grass,
-  blank,
-  water,
-  stone,
-  crack,
-  cliff_wall,
-  underground_stone,
-  water_2
-};
+#include "grid_item.hpp"
+#include "heatmap.hpp"
 
 class Grid {
 public:
@@ -27,7 +14,7 @@ private:
   unsigned int width_;
   unsigned int height_;
 
-  std::vector<std::vector<Grid_Item>> items_;
+  std::vector<std::vector<GridItem>> items_;
 
   uint8_t selected_colour_pair_ = 1;
 
@@ -35,13 +22,7 @@ private:
 
   void map_terrain_();
 
-  Grid_Item get_random_ground_item();
-
-  Grid_Item get_random_underground_item();
-
-  Grid_Item get_random_water_tile();
-
-  void set_colour_for_item(Grid_Item item);
+  void set_colour_for_item(GridItem item);
 
   void unset_colour();
 };

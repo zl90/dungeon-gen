@@ -11,6 +11,8 @@ set(SOURCES
     src/main.cpp
     src/heatmap/heatmap.cpp
     src/grid/grid.cpp
+    src/grid/terrain.cpp
+    src/grid/structure.cpp
 )
 
 add_executable(DungeonGenerator ${SOURCES})

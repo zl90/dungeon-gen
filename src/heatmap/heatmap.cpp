@@ -13,7 +13,7 @@ HeatMap::HeatMap(unsigned int x, unsigned int y) {
 
   insert_hotspots_();
 
-  int smoothen_iteration_count = (rand() % 6) + 9;
+  int smoothen_iteration_count = (rand() % 3) + 6;
 
   for (int k = 0; k < smoothen_iteration_count; k++) {
     smoothen_();
@@ -41,12 +41,12 @@ void HeatMap::print() {
 }
 
 void HeatMap::insert_hotspots_() {
-  int hotspot_percentage = (rand() % (max_hotspot_percentage_ * 10)) + 1;
+  int hotspot_percentage = (rand() % (max_hotspot_percentage_ * 10)) + 5;
 
-  for (unsigned int i = 0; i < width_; i++) {
-    for (unsigned int j = 0; j < height_; j++) {
+  for (unsigned int i = (width_ / 10); i < width_ - (width_ / 10); i++) {
+    for (unsigned int j = (height_ / 10); j < height_ - (height_ / 10); j++) {
       if (((rand() % 1000) + 1) < hotspot_percentage) {
-        heatmap_[i][j] = highest_depth_;
+        heatmap_[i][j] = (((rand() % 50) + 1) / 100.0f) + 0.5f;
       }
     }
   }
