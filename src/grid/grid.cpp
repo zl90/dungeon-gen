@@ -65,12 +65,24 @@ void Grid::map_terrain_() {
 }
 
 GridItem Grid::generate_mountain_grid_item() {
+  int random_choice = rand() % 4;
+  Colour colour;
+  TemperatureType temperature;
+
+  if (random_choice == 1) {
+    colour = GridItem::colours[ColourType::Beige];
+    temperature = TemperatureType::Frigid;
+  } else {
+    colour = GridItem::colours[ColourType::Grey];
+    temperature = TemperatureType::Cold;
+  }
+
   GridItem mountain;
   mountain.icon = Terrain::terrain_icons[TerrainType::Mountain];
-  mountain.colour = GridItem::colours[ColourType::Grey];
+  mountain.colour = colour;
   Terrain mountain_terrain;
   mountain_terrain.type = TerrainType::Mountain;
-  mountain_terrain.temperature = TemperatureType::Frigid;
+  mountain_terrain.temperature = temperature;
   mountain.terrain = mountain_terrain;
   return mountain;
 }
