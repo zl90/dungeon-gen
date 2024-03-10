@@ -23,9 +23,15 @@ private:
 
   void map_basic_terrain_();
   void map_desert_terrain_();
+  void map_grass_terrain_();
+  void map_frozen_terrain_();
 
   GridItem generate_mountain_grid_item();
+  GridItem generate_frozen_tundra_grid_item();
   GridItem generate_desert_grid_item();
+  GridItem generate_barren_plains_grid_item();
+  GridItem generate_grassy_plains_grid_item();
+  GridItem generate_chaparral_grid_item();
   GridItem generate_foothill_grid_item();
   GridItem generate_ocean_grid_item();
   GridItem generate_forest_grid_item();

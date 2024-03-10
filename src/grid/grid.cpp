@@ -34,6 +34,7 @@ Grid::Grid(unsigned int width, unsigned int height)
 
   map_basic_terrain_();
   map_desert_terrain_();
+  map_grass_terrain_();
 }
 
 void Grid::draw() {
@@ -67,6 +68,7 @@ void Grid::map_basic_terrain_() {
 
 void Grid::map_desert_terrain_() {
   HeatMap desert_heatmap(width_, height_);
+  HeatMap barren_plains_heatmap(width_, height_);
 
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
@@ -76,6 +78,51 @@ void Grid::map_desert_terrain_() {
         if (desert_heatmap[i][j] > 0.99f) {
           items_[i][j] = generate_desert_grid_item();
         }
+
+      if (barren_plains_heatmap[i][j] > 0.99f &&
+          items_[i][j].terrain.type == TerrainType::Sandy_Desert) {
+        items_[i][j] = generate_barren_plains_grid_item();
+      }
+    }
+  }
+}
+
+void Grid::map_grass_terrain_() {
+  HeatMap grass_heatmap(width_, height_);
+  HeatMap chaparral_heatmap(width_, height_);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (items_[i][j].terrain.type == TerrainType::Conifer_Forest ||
+          items_[i][j].terrain.type == TerrainType::Pine_Forest)
+        if (grass_heatmap[i][j] > 0.99f) {
+          items_[i][j] = generate_grassy_plains_grid_item();
+        }
+
+      if (chaparral_heatmap[i][j] > 0.99f &&
+          items_[i][j].terrain.type == TerrainType::Grassy_Plains) {
+        items_[i][j] = generate_chaparral_grid_item();
+      }
+    }
+  }
+}
+
+void Grid::map_frozen_terrain_() {
+  HeatMap frozen_heatmap(width_, height_);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_ / 6; j++) {
+      if (frozen_heatmap[i][j] > 0.95f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j] = generate_frozen_tundra_grid_item();
+      }
+    }
+
+    for (unsigned int j = height_ - (height_ / 6); j < height_; j++) {
+      if (frozen_heatmap[i][j] > 0.95f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j] = generate_frozen_tundra_grid_item();
+      }
     }
   }
 }
@@ -114,6 +161,69 @@ GridItem Grid::generate_desert_grid_item() {
   return desert;
 }
 
+GridItem Grid::generate_barren_plains_grid_item() {
+  GridItem barren_plains;
+  barren_plains.icon = Terrain::terrain_icons[TerrainType::Barren_Plains];
+  barren_plains.colour = GridItem::colours[ColourType::Brown];
+  Terrain barren_plains_terrain;
+  barren_plains_terrain.type = TerrainType::Barren_Plains;
+  barren_plains_terrain.temperature = TemperatureType::Hot;
+  barren_plains.terrain = barren_plains_terrain;
+  return barren_plains;
+}
+
+GridItem Grid::generate_frozen_tundra_grid_item() {
+
+  GridItem frozen_tundra;
+  frozen_tundra.icon = Terrain::terrain_icons[TerrainType::Frozen_Tundra];
+  frozen_tundra.colour = GridItem::colours[ColourType::White];
+  Terrain frozen_tundra_terrain;
+  frozen_tundra_terrain.type = TerrainType::Frozen_Tundra;
+  frozen_tundra_terrain.temperature = TemperatureType::Frigid;
+  frozen_tundra.terrain = frozen_tundra_terrain;
+  return frozen_tundra;
+}
+
+GridItem Grid::generate_grassy_plains_grid_item() {
+  int random_choice = rand() % 2;
+  TemperatureType temperature;
+
+  if (random_choice == 1) {
+    temperature = TemperatureType::Humid;
+  } else {
+    temperature = TemperatureType::Temperate;
+  }
+
+  GridItem grassy_plains;
+  grassy_plains.icon = Terrain::terrain_icons[TerrainType::Grassy_Plains];
+  grassy_plains.colour = GridItem::colours[ColourType::Light_Green];
+  Terrain grassy_plains_terrain;
+  grassy_plains_terrain.type = TerrainType::Grassy_Plains;
+  grassy_plains_terrain.temperature = temperature;
+  grassy_plains.terrain = grassy_plains_terrain;
+  return grassy_plains;
+}
+
+GridItem Grid::generate_chaparral_grid_item() {
+  int random_choice = rand() % 2;
+  TemperatureType temperature;
+
+  if (random_choice == 1) {
+    temperature = TemperatureType::Humid;
+  } else {
+    temperature = TemperatureType::Temperate;
+  }
+
+  GridItem chaperral;
+  chaperral.icon = Terrain::terrain_icons[TerrainType::Chaparral];
+  chaperral.colour = GridItem::colours[ColourType::Light_Green];
+  Terrain chaperral_terrain;
+  chaperral_terrain.type = TerrainType::Chaparral;
+  chaperral_terrain.temperature = temperature;
+  chaperral.terrain = chaperral_terrain;
+  return chaperral;
+}
+
 GridItem Grid::generate_foothill_grid_item() {
   GridItem foothill;
   foothill.icon = Terrain::terrain_icons[TerrainType::Foothill];
@@ -126,7 +236,7 @@ GridItem Grid::generate_foothill_grid_item() {
 }
 
 GridItem Grid::generate_forest_grid_item() {
-  int random_choice = rand() % 3;
+  int random_choice = rand() % 6;
   TerrainType forest_type;
   switch (random_choice) {
   case 0:

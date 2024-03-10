@@ -7,7 +7,7 @@ enum class TerrainType {
   Conifer_Forest,
   Ash_Forest,
   Pine_Forest,
-  Grassy_Plain,
+  Grassy_Plains,
   Chaparral,
   Mountain,
   Foothill,
