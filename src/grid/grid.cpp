@@ -32,7 +32,8 @@ Grid::Grid(unsigned int width, unsigned int height)
   items_ = std::vector<std::vector<GridItem>>(
       width, std::vector<GridItem>(height, ocean));
 
-  map_terrain_();
+  map_basic_terrain_();
+  map_desert_terrain_();
 }
 
 void Grid::draw() {
@@ -50,7 +51,7 @@ void Grid::draw() {
   }
 }
 
-void Grid::map_terrain_() {
+void Grid::map_basic_terrain_() {
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (terrain_heatmap_[i][j] > 0.95f) {
@@ -60,6 +61,21 @@ void Grid::map_terrain_() {
       } else if (terrain_heatmap_[i][j] > 0.05f) {
         items_[i][j] = generate_forest_grid_item();
       }
+    }
+  }
+}
+
+void Grid::map_desert_terrain_() {
+  HeatMap desert_heatmap(width_, height_);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (items_[i][j].terrain.type == TerrainType::Ash_Forest ||
+          items_[i][j].terrain.type == TerrainType::Conifer_Forest ||
+          items_[i][j].terrain.type == TerrainType::Pine_Forest)
+        if (desert_heatmap[i][j] > 0.99f) {
+          items_[i][j] = generate_desert_grid_item();
+        }
     }
   }
 }
@@ -85,6 +101,17 @@ GridItem Grid::generate_mountain_grid_item() {
   mountain_terrain.temperature = temperature;
   mountain.terrain = mountain_terrain;
   return mountain;
+}
+
+GridItem Grid::generate_desert_grid_item() {
+  GridItem desert;
+  desert.icon = Terrain::terrain_icons[TerrainType::Sandy_Desert];
+  desert.colour = GridItem::colours[ColourType::Yellow];
+  Terrain desert_terrain;
+  desert_terrain.type = TerrainType::Sandy_Desert;
+  desert_terrain.temperature = TemperatureType::Hot;
+  desert.terrain = desert_terrain;
+  return desert;
 }
 
 GridItem Grid::generate_foothill_grid_item() {

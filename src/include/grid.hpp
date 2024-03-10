@@ -21,9 +21,11 @@ private:
 
   HeatMap terrain_heatmap_;
 
-  void map_terrain_();
+  void map_basic_terrain_();
+  void map_desert_terrain_();
 
   GridItem generate_mountain_grid_item();
+  GridItem generate_desert_grid_item();
   GridItem generate_foothill_grid_item();
   GridItem generate_ocean_grid_item();
   GridItem generate_forest_grid_item();
