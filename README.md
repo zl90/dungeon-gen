@@ -12,5 +12,6 @@ A 2D dungeon/terrain generator I built for the purposes of learning the NCurses 
 - Names for continents/islands.
 - Empires/kingdoms (Structures can belong to these).
 - Time progression (day by day. Keep track of day/month/year).
+- Unit lifecycles, travel between grid cells, fights, births, deaths, etc.
 - Historical events (eg: Dwarf kills Spider, Paladin consecrates structure, etc).
 - At some point I'll add Djikstra's algorithm for unit pathfinding.

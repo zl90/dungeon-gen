@@ -300,6 +300,8 @@ void Grid::set_colour_for_item_(GridItem item) {
   selected_colour_pair_ = item.colour.colour_pair_number;
   const int CUSTOM_COLOR = COLOR_WHITE + selected_colour_pair_;
 
+  // Note: This is a possible place for performance improvement. It's likely
+  // better to initialise all colours/pairs on startup.
   init_color(CUSTOM_COLOR, r, g, b);
   init_pair(selected_colour_pair_, CUSTOM_COLOR, COLOR_BLACK);
 
