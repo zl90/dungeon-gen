@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 #include <wchar.h>
@@ -50,7 +51,7 @@ struct GridItem {
   Terrain terrain;
 
   /** The structure located on this grid tile. */
-  Structure structure;
+  std::optional<Structure> structure;
 
   /** Contains logs for events that occurred on this grid tile in the past. */
   History history;

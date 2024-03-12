@@ -26,6 +26,19 @@ std::unordered_map<StructureType, std::string> Structure::structure_names = {
     {StructureType::Library, "Library"},
 };
 
+Structure::Structure(StructureType type) {
+  StructureStatusType status = StructureStatusType::Abandoned;
+  this->type = type;
+  this->status = status;
+  this->name = Structure::get_random_name(type, status);
+}
+
+Structure::Structure(StructureType type, StructureStatusType status) {
+  this->type = type;
+  this->status = status;
+  this->name = Structure::get_random_name(type, status);
+}
+
 std::vector<std::string> random_name_prefixes = {
     "Ald", "El",  "Gal", "Thal", "Mer", "Var", "Zan", "Mel", "Mor",
     "Ili", "Aer", "Mal", "Moel", "Fel", "Fal", "Fen", "Fin", "Fini"};

@@ -135,7 +135,7 @@ void Grid::map_fortresses_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (fortress_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        items_[i][j].structure = generate_fortress_structure_();
+        items_[i][j].structure = Structure(StructureType::Fortress);
         items_[i][j].colour =
             GridItem::colours[ColourType::Beige]; // Unowned structures are
                                                   // Beige
@@ -145,6 +145,8 @@ void Grid::map_fortresses_() {
   }
 }
 
+// @TODO: All of these generate_x_terrain functions should simply be done in the
+// constructor of the Terrain class.
 GridItem Grid::generate_mountain_terrain_() {
   int random_choice = rand() % 4;
   Colour colour;
@@ -289,15 +291,6 @@ GridItem Grid::generate_ocean_terrain_() {
   ocean_terrain.temperature = TemperatureType::Cold;
   ocean.terrain = ocean_terrain;
   return ocean;
-}
-
-Structure Grid::generate_fortress_structure_() {
-  Structure structure;
-  structure.type = StructureType::Fortress;
-  structure.status = StructureStatusType::Abandoned;
-  structure.name = Structure::get_random_name(StructureType::Fortress,
-                                              StructureStatusType::Abandoned);
-  return structure;
 }
 
 void Grid::set_colour_for_item_(GridItem item) {

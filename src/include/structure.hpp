@@ -33,6 +33,9 @@ enum class StructureStatusType {
 };
 
 struct Structure {
+  Structure(StructureType type);
+  Structure(StructureType type, StructureStatusType status);
+
   static std::unordered_map<StructureType, const wchar_t *> structure_icons;
   static std::unordered_map<StructureType, std::string> structure_names;
   static std::string get_random_name(StructureType, StructureStatusType);
