@@ -28,13 +28,14 @@ std::unordered_map<ColourType, Colour> GridItem::colours = {
 
 Grid::Grid(unsigned int width, unsigned int height)
     : terrain_heatmap_(width, height), width_(width), height_(height) {
-  GridItem ocean = generate_ocean_grid_item();
+  GridItem ocean = generate_ocean_terrain_();
   items_ = std::vector<std::vector<GridItem>>(
       width, std::vector<GridItem>(height, ocean));
 
   map_basic_terrain_();
   map_desert_terrain_();
   map_grass_terrain_();
+  map_fortresses_();
 }
 
 void Grid::draw() {
@@ -43,10 +44,10 @@ void Grid::draw() {
 
   for (int y = 0; y < items_[0].size(); y++) {
     for (int x = 0; x < items_.size(); x++) {
-      set_colour_for_item(items_[x][y]);
+      set_colour_for_item_(items_[x][y]);
       mvaddwstr(row / 2 - y + items_[0].size() / 2,
                 col / 2 - items_.size() / 2 + x, +items_[x][y].icon);
-      unset_colour();
+      unset_colour_();
     }
     addch('\n');
   }
@@ -56,11 +57,11 @@ void Grid::map_basic_terrain_() {
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (terrain_heatmap_[i][j] > 0.95f) {
-        items_[i][j] = generate_mountain_grid_item();
+        items_[i][j] = generate_mountain_terrain_();
       } else if (terrain_heatmap_[i][j] > 0.75f) {
-        items_[i][j] = generate_foothill_grid_item();
+        items_[i][j] = generate_foothill_terrain_();
       } else if (terrain_heatmap_[i][j] > 0.05f) {
-        items_[i][j] = generate_forest_grid_item();
+        items_[i][j] = generate_forest_terrain_();
       }
     }
   }
@@ -76,12 +77,12 @@ void Grid::map_desert_terrain_() {
           items_[i][j].terrain.type == TerrainType::Conifer_Forest ||
           items_[i][j].terrain.type == TerrainType::Pine_Forest)
         if (desert_heatmap[i][j] > 0.99f) {
-          items_[i][j] = generate_desert_grid_item();
+          items_[i][j] = generate_desert_terrain_();
         }
 
       if (barren_plains_heatmap[i][j] > 0.99f &&
           items_[i][j].terrain.type == TerrainType::Sandy_Desert) {
-        items_[i][j] = generate_barren_plains_grid_item();
+        items_[i][j] = generate_barren_plains_terrain_();
       }
     }
   }
@@ -96,12 +97,12 @@ void Grid::map_grass_terrain_() {
       if (items_[i][j].terrain.type == TerrainType::Conifer_Forest ||
           items_[i][j].terrain.type == TerrainType::Pine_Forest)
         if (grass_heatmap[i][j] > 0.99f) {
-          items_[i][j] = generate_grassy_plains_grid_item();
+          items_[i][j] = generate_grassy_plains_terrain_();
         }
 
       if (chaparral_heatmap[i][j] > 0.99f &&
           items_[i][j].terrain.type == TerrainType::Grassy_Plains) {
-        items_[i][j] = generate_chaparral_grid_item();
+        items_[i][j] = generate_chaparral_terrain_();
       }
     }
   }
@@ -114,20 +115,37 @@ void Grid::map_frozen_terrain_() {
     for (unsigned int j = 0; j < height_ / 6; j++) {
       if (frozen_heatmap[i][j] > 0.95f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        items_[i][j] = generate_frozen_tundra_grid_item();
+        items_[i][j] = generate_frozen_tundra_terrain_();
       }
     }
 
     for (unsigned int j = height_ - (height_ / 6); j < height_; j++) {
       if (frozen_heatmap[i][j] > 0.95f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        items_[i][j] = generate_frozen_tundra_grid_item();
+        items_[i][j] = generate_frozen_tundra_terrain_();
       }
     }
   }
 }
 
-GridItem Grid::generate_mountain_grid_item() {
+void Grid::map_fortresses_() {
+  HeatMap fortress_heatmap(width_, height_, StructureType::Fortress);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (fortress_heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = generate_fortress_structure_();
+        items_[i][j].colour =
+            GridItem::colours[ColourType::Beige]; // Unowned structures are
+                                                  // Beige
+        items_[i][j].icon = Structure::structure_icons[StructureType::Fortress];
+      }
+    }
+  }
+}
+
+GridItem Grid::generate_mountain_terrain_() {
   int random_choice = rand() % 4;
   Colour colour;
   TemperatureType temperature;
@@ -150,7 +168,7 @@ GridItem Grid::generate_mountain_grid_item() {
   return mountain;
 }
 
-GridItem Grid::generate_desert_grid_item() {
+GridItem Grid::generate_desert_terrain_() {
   GridItem desert;
   desert.icon = Terrain::terrain_icons[TerrainType::Sandy_Desert];
   desert.colour = GridItem::colours[ColourType::Yellow];
@@ -161,7 +179,7 @@ GridItem Grid::generate_desert_grid_item() {
   return desert;
 }
 
-GridItem Grid::generate_barren_plains_grid_item() {
+GridItem Grid::generate_barren_plains_terrain_() {
   GridItem barren_plains;
   barren_plains.icon = Terrain::terrain_icons[TerrainType::Barren_Plains];
   barren_plains.colour = GridItem::colours[ColourType::Brown];
@@ -172,8 +190,7 @@ GridItem Grid::generate_barren_plains_grid_item() {
   return barren_plains;
 }
 
-GridItem Grid::generate_frozen_tundra_grid_item() {
-
+GridItem Grid::generate_frozen_tundra_terrain_() {
   GridItem frozen_tundra;
   frozen_tundra.icon = Terrain::terrain_icons[TerrainType::Frozen_Tundra];
   frozen_tundra.colour = GridItem::colours[ColourType::White];
@@ -184,7 +201,7 @@ GridItem Grid::generate_frozen_tundra_grid_item() {
   return frozen_tundra;
 }
 
-GridItem Grid::generate_grassy_plains_grid_item() {
+GridItem Grid::generate_grassy_plains_terrain_() {
   int random_choice = rand() % 2;
   TemperatureType temperature;
 
@@ -204,7 +221,7 @@ GridItem Grid::generate_grassy_plains_grid_item() {
   return grassy_plains;
 }
 
-GridItem Grid::generate_chaparral_grid_item() {
+GridItem Grid::generate_chaparral_terrain_() {
   int random_choice = rand() % 2;
   TemperatureType temperature;
 
@@ -224,7 +241,7 @@ GridItem Grid::generate_chaparral_grid_item() {
   return chaperral;
 }
 
-GridItem Grid::generate_foothill_grid_item() {
+GridItem Grid::generate_foothill_terrain_() {
   GridItem foothill;
   foothill.icon = Terrain::terrain_icons[TerrainType::Foothill];
   foothill.colour = GridItem::colours[ColourType::Beige];
@@ -235,7 +252,7 @@ GridItem Grid::generate_foothill_grid_item() {
   return foothill;
 }
 
-GridItem Grid::generate_forest_grid_item() {
+GridItem Grid::generate_forest_terrain_() {
   int random_choice = rand() % 6;
   TerrainType forest_type;
   switch (random_choice) {
@@ -263,7 +280,7 @@ GridItem Grid::generate_forest_grid_item() {
   return forest;
 }
 
-GridItem Grid::generate_ocean_grid_item() {
+GridItem Grid::generate_ocean_terrain_() {
   GridItem ocean;
   ocean.icon = Terrain::terrain_icons[TerrainType::Ocean];
   ocean.colour = GridItem::colours[ColourType::Blue];
@@ -274,7 +291,16 @@ GridItem Grid::generate_ocean_grid_item() {
   return ocean;
 }
 
-void Grid::set_colour_for_item(GridItem item) {
+Structure Grid::generate_fortress_structure_() {
+  Structure structure;
+  structure.type = StructureType::Fortress;
+  structure.status = StructureStatusType::Abandoned;
+  structure.name = Structure::get_random_name(StructureType::Fortress,
+                                              StructureStatusType::Abandoned);
+  return structure;
+}
+
+void Grid::set_colour_for_item_(GridItem item) {
   int r = item.colour.r;
   int g = item.colour.g;
   int b = item.colour.b;
@@ -287,7 +313,7 @@ void Grid::set_colour_for_item(GridItem item) {
   attron(COLOR_PAIR(selected_colour_pair_));
 }
 
-void Grid::unset_colour() {
+void Grid::unset_colour_() {
   attroff(COLOR_PAIR(selected_colour_pair_));
   selected_colour_pair_ = 1;
 }

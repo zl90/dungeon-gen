@@ -1,4 +1,6 @@
 #pragma once
+#include "unit.hpp"
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <wchar.h>
@@ -14,8 +16,9 @@ enum class StructureType {
   Boneyard,
   Cemetery,
   Bridge,
-  MageTower,
-  Library
+  Mage_Tower,
+  Library,
+  Trolls_Den
 };
 
 enum class StructureStatusType {
@@ -31,8 +34,11 @@ enum class StructureStatusType {
 
 struct Structure {
   static std::unordered_map<StructureType, const wchar_t *> structure_icons;
+  static std::unordered_map<StructureType, std::string> structure_names;
+  static std::string get_random_name(StructureType, StructureStatusType);
 
   std::string name;
   StructureType type;
   StructureStatusType status;
+  std::optional<Unit> owner;
 };

@@ -1,9 +1,12 @@
 #pragma once
+#include "structure.hpp"
 #include <vector>
 
 class HeatMap {
 public:
   HeatMap(const unsigned int x, const unsigned int y);
+
+  HeatMap(const unsigned int x, const unsigned int y, StructureType structure);
 
   void print();
 
@@ -13,6 +16,11 @@ private:
   /** Randomly inserts hotspots into the heatmap. A hotspot is defined as a grid
    * cell which contains a value equal to `highest_depth_` */
   void insert_hotspots_();
+  /** Randomly inserts hotspots into the heatmap. A hotspot is defined as a grid
+     * cell which contains a value equal to `highest_depth_`.
+     @param `hotspot_percentage`, used to determine the frequency of hotspots.
+   */
+  void insert_hotspots_(int hotspot_percentage);
 
   /** Performs a discrete 2D convolution on the heatmap, smoothing out hotspots.
    */

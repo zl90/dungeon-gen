@@ -22,7 +22,7 @@ int main() {
   int input;
 
   while (input != 'q' && input != 27) {
-    Grid g(84, 48);
+    Grid g(128, 48);
     g.draw();
 
     refresh();
