@@ -8,6 +8,9 @@ public:
 
   HeatMap(const unsigned int x, const unsigned int y, StructureType structure);
 
+  HeatMap(const unsigned int x, const unsigned int y, StructureType structure,
+          int hotspot_percentage);
+
   void print();
 
   std::vector<float> &operator[](int i) { return heatmap_[i]; };

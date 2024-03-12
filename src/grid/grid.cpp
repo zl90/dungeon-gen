@@ -36,6 +36,8 @@ Grid::Grid(unsigned int width, unsigned int height)
   map_desert_terrain_();
   map_grass_terrain_();
   map_fortresses_();
+  map_settlements_();
+  map_caves_();
 }
 
 void Grid::draw() {
@@ -129,7 +131,7 @@ void Grid::map_frozen_terrain_() {
 }
 
 void Grid::map_fortresses_() {
-  HeatMap fortress_heatmap(width_, height_, StructureType::Fortress);
+  HeatMap fortress_heatmap(width_, height_, StructureType::Fortress, 5);
 
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
@@ -140,6 +142,40 @@ void Grid::map_fortresses_() {
             GridItem::colours[ColourType::Beige]; // Unowned structures are
                                                   // Beige
         items_[i][j].icon = Structure::structure_icons[StructureType::Fortress];
+      }
+    }
+  }
+}
+
+void Grid::map_settlements_() {
+  HeatMap settlement_heatmap(width_, height_, StructureType::Settlement, 10);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (settlement_heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Settlement);
+        items_[i][j].colour =
+            GridItem::colours[ColourType::Beige]; // Unowned structures are
+                                                  // Beige
+        items_[i][j].icon =
+            Structure::structure_icons[StructureType::Settlement];
+      }
+    }
+  }
+}
+
+void Grid::map_caves_() {
+  HeatMap cave_heatmap(width_, height_, StructureType::Cave, 12);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (cave_heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Cave);
+        items_[i][j].colour = GridItem::colours[ColourType::Brown];
+
+        items_[i][j].icon = Structure::structure_icons[StructureType::Cave];
       }
     }
   }
@@ -300,8 +336,6 @@ void Grid::set_colour_for_item_(GridItem item) {
   selected_colour_pair_ = item.colour.colour_pair_number;
   const int CUSTOM_COLOR = COLOR_WHITE + selected_colour_pair_;
 
-  // Note: This is a possible place for performance improvement. It's likely
-  // better to initialise all colours/pairs on startup.
   init_color(CUSTOM_COLOR, r, g, b);
   init_pair(selected_colour_pair_, CUSTOM_COLOR, COLOR_BLACK);
 

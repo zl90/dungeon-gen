@@ -30,6 +30,17 @@ HeatMap::HeatMap(unsigned int x, unsigned int y, StructureType structure) {
   insert_hotspots_(5);
 }
 
+HeatMap::HeatMap(unsigned int x, unsigned int y, StructureType structure,
+                 int hotspot_percentage) {
+  width_ = x;
+  height_ = y;
+
+  heatmap_ = std::vector<std::vector<float>>(
+      width_, std::vector<float>(height_, lowest_depth_));
+
+  insert_hotspots_(hotspot_percentage);
+}
+
 void HeatMap::print() {
   for (unsigned int j = 0; j < height_; j++) {
     for (unsigned int i = 0; i < width_; i++) {

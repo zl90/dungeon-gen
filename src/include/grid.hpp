@@ -26,6 +26,8 @@ private:
   void map_grass_terrain_();
   void map_frozen_terrain_();
   void map_fortresses_();
+  void map_settlements_();
+  void map_caves_();
 
   GridItem generate_mountain_terrain_();
   GridItem generate_frozen_tundra_terrain_();
