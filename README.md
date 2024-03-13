@@ -6,9 +6,9 @@ A 2D dungeon/terrain generator I built for the purposes of learning the NCurses 
 2. From the project root directory run the build script: `./build.sh`. This will build and run the program.
 
 ## Ideas/TODOs
-- Seed the map with all types of Structures (other Structures will spring up over time based on the location of existing Structures).
-- Create randomly generated unit owners for each initial Structure.
 - Basic cursor movement + information panel.
+- Random name generation for Units based on RaceType.
+- Random name generation for Structures based on StructureType and owner RaceType.
 - River tile generation (no clustered hotspots).
 - Names for continents/islands.
 - Empires/kingdoms (Structures can belong to these).
