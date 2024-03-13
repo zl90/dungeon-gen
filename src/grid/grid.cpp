@@ -13,9 +13,9 @@ std::unordered_map<ColourType, Colour> GridItem::colours = {
     {ColourType::White, {900, 900, 900, 1}},
     {ColourType::Blue, {50, 403, 768, 2}},
     {ColourType::Light_Blue, {690, 874, 843, 3}},
-    {ColourType::Red, {1000, 133, 133, 4}},
+    {ColourType::Red, {800, 133, 133, 4}},
     {ColourType::Pink, {1000, 431, 733, 5}},
-    {ColourType::Purple, {400, 0, 1000, 6}},
+    {ColourType::Purple, {700, 300, 800, 6}},
     {ColourType::Orange, {1000, 400, 0, 7}},
     {ColourType::Yellow, {1000, 854, 352, 8}},
     {ColourType::Green, {266, 619, 207, 9}},
@@ -38,6 +38,11 @@ Grid::Grid(unsigned int width, unsigned int height)
   map_fortresses_();
   map_settlements_();
   map_caves_();
+  map_inns_();
+  map_bridges_();
+  map_mage_towers_();
+  map_libraries_();
+  map_trolls_dens_();
 }
 
 void Grid::draw() {
@@ -165,6 +170,23 @@ void Grid::map_settlements_() {
   }
 }
 
+void Grid::map_inns_() {
+  HeatMap inn_heatmap(width_, height_, StructureType::Inn, 8);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (inn_heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Inn);
+        items_[i][j].colour =
+            GridItem::colours[ColourType::Beige]; // Unowned structures are
+                                                  // Beige
+        items_[i][j].icon = Structure::structure_icons[StructureType::Inn];
+      }
+    }
+  }
+}
+
 void Grid::map_caves_() {
   HeatMap cave_heatmap(width_, height_, StructureType::Cave, 12);
 
@@ -176,6 +198,72 @@ void Grid::map_caves_() {
         items_[i][j].colour = GridItem::colours[ColourType::Brown];
 
         items_[i][j].icon = Structure::structure_icons[StructureType::Cave];
+      }
+    }
+  }
+}
+
+void Grid::map_bridges_() {
+  HeatMap heatmap(width_, height_, StructureType::Bridge, 7);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Bridge);
+        items_[i][j].colour = GridItem::colours[ColourType::Grey];
+
+        items_[i][j].icon = Structure::structure_icons[StructureType::Bridge];
+      }
+    }
+  }
+}
+
+void Grid::map_mage_towers_() {
+  HeatMap heatmap(width_, height_, StructureType::Mage_Tower, 4);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Mage_Tower);
+        items_[i][j].colour = GridItem::colours[ColourType::Purple];
+
+        items_[i][j].icon =
+            Structure::structure_icons[StructureType::Mage_Tower];
+      }
+    }
+  }
+}
+
+void Grid::map_libraries_() {
+  HeatMap heatmap(width_, height_, StructureType::Library, 4);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Library);
+        items_[i][j].colour = GridItem::colours[ColourType::Beige];
+
+        items_[i][j].icon = Structure::structure_icons[StructureType::Library];
+      }
+    }
+  }
+}
+
+void Grid::map_trolls_dens_() {
+  HeatMap heatmap(width_, height_, StructureType::Trolls_Den, 6);
+
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        items_[i][j].structure = Structure(StructureType::Trolls_Den);
+        items_[i][j].colour = GridItem::colours[ColourType::Red];
+
+        items_[i][j].icon =
+            Structure::structure_icons[StructureType::Trolls_Den];
       }
     }
   }

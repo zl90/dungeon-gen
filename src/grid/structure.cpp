@@ -1,5 +1,4 @@
 #include "../include/structure.hpp"
-#include <iostream>
 
 std::unordered_map<StructureType, const wchar_t *> Structure::structure_icons =
     {
@@ -9,6 +8,7 @@ std::unordered_map<StructureType, const wchar_t *> Structure::structure_icons =
         {StructureType::Grave, L"▬"},      {StructureType::Boneyard, L"º"},
         {StructureType::Cemetery, L"≡"},   {StructureType::Bridge, L"╦"},
         {StructureType::Mage_Tower, L"╥"}, {StructureType::Library, L"Θ"},
+        {StructureType::Trolls_Den, L"ô"},
 };
 
 std::unordered_map<StructureType, std::string> Structure::structure_names = {

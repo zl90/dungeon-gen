@@ -28,6 +28,11 @@ private:
   void map_fortresses_();
   void map_settlements_();
   void map_caves_();
+  void map_inns_();
+  void map_bridges_();
+  void map_mage_towers_();
+  void map_libraries_();
+  void map_trolls_dens_();
 
   GridItem generate_mountain_terrain_();
   GridItem generate_frozen_tundra_terrain_();
@@ -38,8 +43,6 @@ private:
   GridItem generate_foothill_terrain_();
   GridItem generate_ocean_terrain_();
   GridItem generate_forest_terrain_();
-
-  Structure generate_fortress_structure_();
 
   void set_colour_for_item_(GridItem item);
 
