@@ -156,6 +156,8 @@ void Grid::map_frozen_terrain_() {
 void Grid::map_fortresses_() {
   HeatMap fortress_heatmap(width_, height_, StructureType::Fortress, 5);
 
+  // @TODO: Fortresses should not be owned by Trolls, Arachnids, Toadmen,
+  // Nymphs, Spirits and Gelatinids.
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (fortress_heatmap[i][j] > 0.0f &&
@@ -174,6 +176,7 @@ void Grid::map_fortresses_() {
 void Grid::map_settlements_() {
   HeatMap settlement_heatmap(width_, height_, StructureType::Settlement, 10);
 
+  // @TODO: Settlements should only be owned by humans, dwarves and elves.
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (settlement_heatmap[i][j] > 0.0f &&
@@ -227,6 +230,7 @@ void Grid::map_caves_() {
 void Grid::map_bridges_() {
   HeatMap heatmap(width_, height_, StructureType::Bridge, 7);
 
+  // @TODO: Bridges should only be owned by humans, dwarves and elves.
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
@@ -263,6 +267,7 @@ void Grid::map_mage_towers_() {
 void Grid::map_libraries_() {
   HeatMap heatmap(width_, height_, StructureType::Library, 4);
 
+  // @TODO: Libraries should only be owned by humans, dwarves and elves.
   for (unsigned int i = 0; i < width_; i++) {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
