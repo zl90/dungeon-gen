@@ -1,4 +1,3 @@
-#include <array>
 #include <ncurses.h>
 #include <random>
 #include <vector>
@@ -26,6 +25,24 @@ std::unordered_map<ColourType, Colour> GridItem::colours = {
     {ColourType::Light_Pink, {1000, 654, 964, 14}},
 };
 
+std::unordered_map<RaceType, ColourType> GridItem::colours_by_race = {
+    {RaceType::Human, ColourType::Yellow},
+    {RaceType::Dwarf, ColourType::Light_Blue},
+    {RaceType::Elf, ColourType::Light_Pink},
+    {RaceType::Orc, ColourType::Pink},
+    {RaceType::Ogre, ColourType::Pink},
+    {RaceType::Troll, ColourType::Red},
+    {RaceType::Arachnid, ColourType::Orange},
+    {RaceType::ToadMan, ColourType::Light_Green},
+    {RaceType::Fairy, ColourType::Light_Pink},
+    {RaceType::Dragon, ColourType::Red},
+    {RaceType::Undead, ColourType::Beige},
+    {RaceType::Gnome, ColourType::Orange},
+    {RaceType::Nymph, ColourType::Light_Pink},
+    {RaceType::Spirit, ColourType::White},
+    {RaceType::Gelatinid, ColourType::Light_Green},
+};
+
 Grid::Grid(unsigned int width, unsigned int height)
     : terrain_heatmap_(width, height), width_(width), height_(height) {
   GridItem ocean = generate_ocean_terrain_();
@@ -43,6 +60,7 @@ Grid::Grid(unsigned int width, unsigned int height)
   map_mage_towers_();
   map_libraries_();
   map_trolls_dens_();
+  map_pits_();
 }
 
 void Grid::draw() {
@@ -142,10 +160,11 @@ void Grid::map_fortresses_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (fortress_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
+        Unit owner;
         items_[i][j].structure = Structure(StructureType::Fortress);
+        items_[i][j].structure->owner = owner;
         items_[i][j].colour =
-            GridItem::colours[ColourType::Beige]; // Unowned structures are
-                                                  // Beige
+            GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Fortress];
       }
     }
@@ -159,10 +178,11 @@ void Grid::map_settlements_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (settlement_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
+        Unit owner;
         items_[i][j].structure = Structure(StructureType::Settlement);
+        items_[i][j].structure->owner = owner;
         items_[i][j].colour =
-            GridItem::colours[ColourType::Beige]; // Unowned structures are
-                                                  // Beige
+            GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon =
             Structure::structure_icons[StructureType::Settlement];
       }
@@ -177,10 +197,11 @@ void Grid::map_inns_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (inn_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
+        Unit owner;
         items_[i][j].structure = Structure(StructureType::Inn);
+        items_[i][j].structure->owner = owner;
         items_[i][j].colour =
-            GridItem::colours[ColourType::Beige]; // Unowned structures are
-                                                  // Beige
+            GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Inn];
       }
     }
@@ -210,8 +231,11 @@ void Grid::map_bridges_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
+        Unit owner;
         items_[i][j].structure = Structure(StructureType::Bridge);
-        items_[i][j].colour = GridItem::colours[ColourType::Grey];
+        items_[i][j].structure->owner = owner;
+        items_[i][j].colour =
+            GridItem::colours[GridItem::colours_by_race[owner.race]];
 
         items_[i][j].icon = Structure::structure_icons[StructureType::Bridge];
       }
@@ -243,10 +267,33 @@ void Grid::map_libraries_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
+        Unit owner;
         items_[i][j].structure = Structure(StructureType::Library);
-        items_[i][j].colour = GridItem::colours[ColourType::Beige];
+        items_[i][j].structure->owner = owner;
+        items_[i][j].colour =
+            GridItem::colours[GridItem::colours_by_race[owner.race]];
 
         items_[i][j].icon = Structure::structure_icons[StructureType::Library];
+      }
+    }
+  }
+}
+
+void Grid::map_pits_() {
+  HeatMap heatmap(width_, height_, StructureType::Pit, 7);
+
+  // @TODO: Pits should only be occupied by the lesser evil creatures ->
+  // goblins, orcs, arachnids, ogres, undeads.
+  for (unsigned int i = 0; i < width_; i++) {
+    for (unsigned int j = 0; j < height_; j++) {
+      if (heatmap[i][j] > 0.0f &&
+          items_[i][j].terrain.type != TerrainType::Ocean) {
+        Unit owner;
+        items_[i][j].structure = Structure(StructureType::Pit);
+        items_[i][j].structure->owner = owner;
+        items_[i][j].colour =
+            GridItem::colours[GridItem::colours_by_race[owner.race]];
+        items_[i][j].icon = Structure::structure_icons[StructureType::Pit];
       }
     }
   }

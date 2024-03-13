@@ -7,6 +7,7 @@ A 2D dungeon/terrain generator I built for the purposes of learning the NCurses 
 
 ## Ideas/TODOs
 - Seed the map with all types of Structures (other Structures will spring up over time based on the location of existing Structures).
+- Create randomly generated unit owners for each initial Structure.
 - Basic cursor movement + information panel.
 - River tile generation (no clustered hotspots).
 - Names for continents/islands.

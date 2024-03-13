@@ -46,6 +46,7 @@ struct Colour {
 
 struct GridItem {
   static std::unordered_map<ColourType, Colour> colours;
+  static std::unordered_map<RaceType, ColourType> colours_by_race;
 
   /** The terrain of this grid tile. */
   Terrain terrain;

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "history.hpp"
@@ -9,6 +11,7 @@
 enum class RaceType {
   Human,
   Dwarf,
+  Elf,
   Goblin,
   Orc,
   Ogre,
@@ -21,15 +24,26 @@ enum class RaceType {
   Gnome,
   Nymph,
   Spirit,
-  Gelatinid
+  Gelatinid,
 };
 
 struct Unit {
+  static std::vector<Unit> unit_templates;
+
+  Unit();
+  Unit(RaceType race);
+  Unit(std::string name, std::optional<Weapon> weapon,
+       std::optional<Armour> armour, std::vector<Item> loot, History history,
+       int health, RaceType race);
+
+  Unit(const Unit &obj);
+  Unit &operator=(const Unit &obj);
+
   std::string name;
-  Weapon weapon;
-  Armour armour;
+  std::optional<Weapon> weapon;
+  std::optional<Armour> armour;
   std::vector<Item> loot;
   History history;
   int health;
-  RaceType type;
+  RaceType race;
 };

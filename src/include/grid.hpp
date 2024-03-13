@@ -33,6 +33,7 @@ private:
   void map_mage_towers_();
   void map_libraries_();
   void map_trolls_dens_();
+  void map_pits_();
 
   GridItem generate_mountain_terrain_();
   GridItem generate_frozen_tundra_terrain_();

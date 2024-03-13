@@ -18,7 +18,8 @@ enum class StructureType {
   Bridge,
   Mage_Tower,
   Library,
-  Trolls_Den
+  Trolls_Den,
+  Pit
 };
 
 enum class StructureStatusType {

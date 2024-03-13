@@ -13,6 +13,7 @@ set(SOURCES
     src/grid/grid.cpp
     src/grid/terrain.cpp
     src/grid/structure.cpp
+    src/grid/unit.cpp
 )
 
 add_executable(DungeonGenerator ${SOURCES})

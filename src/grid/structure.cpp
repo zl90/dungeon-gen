@@ -2,13 +2,13 @@
 
 std::unordered_map<StructureType, const wchar_t *> Structure::structure_icons =
     {
-        {StructureType::Ruins, L"Θ"},      {StructureType::Temple, L"π"},
+        {StructureType::Ruins, L"╨"},      {StructureType::Temple, L"π"},
         {StructureType::Settlement, L"î"}, {StructureType::Fortress, L"Ω"},
         {StructureType::Inn, L"±"},        {StructureType::Cave, L"◘"},
         {StructureType::Grave, L"▬"},      {StructureType::Boneyard, L"º"},
         {StructureType::Cemetery, L"≡"},   {StructureType::Bridge, L"╦"},
-        {StructureType::Mage_Tower, L"╥"}, {StructureType::Library, L"Θ"},
-        {StructureType::Trolls_Den, L"ô"},
+        {StructureType::Mage_Tower, L"╥"}, {StructureType::Library, L"µ"},
+        {StructureType::Trolls_Den, L"ô"}, {StructureType::Pit, L"º"},
 };
 
 std::unordered_map<StructureType, std::string> Structure::structure_names = {
@@ -24,6 +24,7 @@ std::unordered_map<StructureType, std::string> Structure::structure_names = {
     {StructureType::Bridge, "Bridge"},
     {StructureType::Mage_Tower, "Mage Tower"},
     {StructureType::Library, "Library"},
+    {StructureType::Pit, "Pit"},
 };
 
 Structure::Structure(StructureType type) {
