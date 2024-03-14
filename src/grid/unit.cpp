@@ -1,5 +1,8 @@
 #include "../include/unit.hpp"
+#include <algorithm>
+#include <exception>
 #include <random>
+#include <stdexcept>
 
 std::vector<Unit> Unit::unit_templates = {
     {"", Weapon{}, Armour{}, {}, History{}, 100, RaceType::Human},
@@ -20,12 +23,76 @@ std::vector<Unit> Unit::unit_templates = {
     {"", Weapon{}, Armour{}, {}, History{}, 80, RaceType::Gelatinid},
 };
 
+Unit Unit::get_random_good_unit() {
+  int random_choice = rand() % 3;
+  RaceType race_type;
+
+  switch (random_choice) {
+  case 0:
+    race_type = RaceType::Human;
+    break;
+  case 1:
+    race_type = RaceType::Dwarf;
+    break;
+  case 2:
+    race_type = RaceType::Elf;
+    break;
+  default:
+    race_type = RaceType::Human;
+    break;
+  }
+
+  Unit unit(race_type);
+  return unit;
+}
+
+Unit Unit::get_random_lesser_evil_unit() {
+  int random_choice = rand() % 5;
+  RaceType race_type;
+
+  switch (random_choice) {
+  case 0:
+    race_type = RaceType::Goblin;
+    break;
+  case 1:
+    race_type = RaceType::Orc;
+    break;
+  case 2:
+    race_type = RaceType::Arachnid;
+    break;
+  case 3:
+    race_type = RaceType::Undead;
+    break;
+  case 4:
+    race_type = RaceType::Ogre;
+    break;
+  default:
+    race_type = RaceType::Goblin;
+    break;
+  }
+
+  Unit unit(race_type);
+  return unit;
+}
+
 Unit::Unit() {
   // Completely random unit
   int random_choice = rand() % Unit::unit_templates.size();
   // TODO: generate a random name according to race type.
   *this = Unit::unit_templates[random_choice];
 }
+
+Unit::Unit(RaceType type) {
+  auto it =
+      std::find_if(unit_templates.begin(), unit_templates.end(),
+                   [type](const Unit &unit) { return unit.race == type; });
+
+  if (it != unit_templates.end()) {
+    *this = *it;
+  } else {
+    throw std::runtime_error("Unit not found for RaceType");
+  }
+};
 
 Unit::Unit(std::string name, std::optional<Weapon> weapon,
            std::optional<Armour> armour, std::vector<Item> loot,

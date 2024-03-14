@@ -29,6 +29,8 @@ enum class RaceType {
 
 struct Unit {
   static std::vector<Unit> unit_templates;
+  static Unit get_random_good_unit();
+  static Unit get_random_lesser_evil_unit();
 
   Unit();
   Unit(RaceType race);
