@@ -1,5 +1,6 @@
 #include "../include/game_loop.hpp"
 
+// @TODO: this will need to be made into a class eventually
 void game_loop() {
   bool running = true;
   Grid g(84, 36);
