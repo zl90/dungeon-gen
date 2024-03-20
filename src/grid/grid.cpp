@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <random>
+#include <string>
 #include <vector>
 #include <wchar.h>
 
@@ -95,10 +96,9 @@ void Grid::draw() {
     for (int x = 0; x < items_.size(); x++) {
       set_colour_for_item_(items_[x][y], x, y);
       mvaddwstr(row / 2 - y + items_[0].size() / 2,
-                col / 2 - items_.size() / 2 + x, +items_[x][y].icon);
+                col / 2 - items_.size() / 2 + x, items_[x][y].icon);
       unset_colour_();
     }
-    addch('\n');
   }
 }
 
