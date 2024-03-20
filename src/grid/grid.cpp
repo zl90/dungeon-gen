@@ -63,13 +63,37 @@ Grid::Grid(unsigned int width, unsigned int height)
   map_pits_();
 }
 
+void Grid::cursor_up() {
+  if (cursor_.y + 1 < height_) {
+    cursor_.y++;
+  }
+}
+
+void Grid::cursor_down() {
+  if (cursor_.y - 1 >= 0) {
+    cursor_.y--;
+  }
+}
+
+void Grid::cursor_left() {
+  if (cursor_.x - 1 >= 0) {
+    cursor_.x--;
+  }
+}
+
+void Grid::cursor_right() {
+  if (cursor_.x + 1 < width_) {
+    cursor_.x++;
+  }
+}
+
 void Grid::draw() {
   int row, col;
   getmaxyx(stdscr, row, col);
 
   for (int y = 0; y < items_[0].size(); y++) {
     for (int x = 0; x < items_.size(); x++) {
-      set_colour_for_item_(items_[x][y]);
+      set_colour_for_item_(items_[x][y], x, y);
       mvaddwstr(row / 2 - y + items_[0].size() / 2,
                 col / 2 - items_.size() / 2 + x, +items_[x][y].icon);
       unset_colour_();
@@ -470,15 +494,25 @@ GridItem Grid::generate_ocean_terrain_() {
   return ocean;
 }
 
-void Grid::set_colour_for_item_(GridItem item) {
-  int r = item.colour.r;
-  int g = item.colour.g;
-  int b = item.colour.b;
-  selected_colour_pair_ = item.colour.colour_pair_number;
-  const int CUSTOM_COLOR = COLOR_WHITE + selected_colour_pair_;
-
-  init_color(CUSTOM_COLOR, r, g, b);
-  init_pair(selected_colour_pair_, CUSTOM_COLOR, COLOR_BLACK);
+void Grid::set_colour_for_item_(GridItem item, int x, int y) {
+  if (x == cursor_.x && y == cursor_.y) {
+    Colour background_colour = GridItem::colours[ColourType::Yellow];
+    int r = background_colour.r;
+    int g = background_colour.g;
+    int b = background_colour.b;
+    selected_colour_pair_ = 240;
+    const int CURSOR_COLOUR = COLOR_WHITE + selected_colour_pair_;
+    init_color(CURSOR_COLOUR, r, g, b);
+    init_pair(selected_colour_pair_, COLOR_BLACK, CURSOR_COLOUR);
+  } else {
+    int r = item.colour.r;
+    int g = item.colour.g;
+    int b = item.colour.b;
+    selected_colour_pair_ = item.colour.colour_pair_number;
+    const int CUSTOM_COLOR = COLOR_WHITE + selected_colour_pair_;
+    init_color(CUSTOM_COLOR, r, g, b);
+    init_pair(selected_colour_pair_, CUSTOM_COLOR, COLOR_BLACK);
+  }
 
   attron(COLOR_PAIR(selected_colour_pair_));
 }
