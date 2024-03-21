@@ -1,3 +1,4 @@
+#include <iostream>
 #include <ncurses.h>
 #include <random>
 #include <string>
@@ -64,13 +65,13 @@ Grid::Grid(unsigned int width, unsigned int height)
   map_pits_();
 }
 
-void Grid::cursor_up() {
+void Grid::cursor_down() {
   if (cursor_.y + 1 < height_) {
     cursor_.y++;
   }
 }
 
-void Grid::cursor_down() {
+void Grid::cursor_up() {
   if (cursor_.y - 1 >= 0) {
     cursor_.y--;
   }
@@ -95,11 +96,32 @@ void Grid::draw() {
   for (int y = 0; y < items_[0].size(); y++) {
     for (int x = 0; x < items_.size(); x++) {
       set_colour_for_item_(items_[x][y], x, y);
-      mvaddwstr(row / 2 - y + items_[0].size() / 2,
-                col / 2 - items_.size() / 2 + x, items_[x][y].icon);
+      mvaddwstr(top_offset_ + y, col / 2 - items_.size() / 2 + x,
+                items_[x][y].icon);
       unset_colour_();
     }
   }
+
+  std::string terrain_str = "Terrain: ";
+  std::string structure_name_str = "Structure: ";
+  if (items_[cursor_.x][cursor_.y].structure.has_value()) {
+    structure_name_str =
+        "Structure: " + items_[cursor_.x][cursor_.y].structure->name;
+  }
+
+  init_color(1, 800, 800, 800);
+  init_pair(1, 1, COLOR_BLACK);
+
+  attron(COLOR_PAIR(selected_colour_pair_));
+
+  // Clear previous structure_name_str values
+  mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
+           std::string(items_.size(), ' ').c_str());
+
+  mvaddstr(items_[0].size() + top_offset_ + 1, col / 2 - items_.size() / 2,
+           terrain_str.c_str());
+  mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
+           structure_name_str.c_str());
 }
 
 void Grid::map_basic_terrain_() {

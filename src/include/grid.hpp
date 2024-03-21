@@ -20,6 +20,8 @@ private:
   unsigned int width_;
   unsigned int height_;
 
+  unsigned int top_offset_ = 3;
+
   std::vector<std::vector<GridItem>> items_;
 
   Cursor cursor_;
