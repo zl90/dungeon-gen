@@ -25,6 +25,7 @@ std::unordered_map<StructureType, std::string> Structure::structure_names = {
     {StructureType::Mage_Tower, "Mage Tower"},
     {StructureType::Library, "Library"},
     {StructureType::Pit, "Pit"},
+    {StructureType::Trolls_Den, "Troll Den"},
 };
 
 Structure::Structure(StructureType type) {

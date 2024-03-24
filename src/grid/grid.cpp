@@ -114,7 +114,9 @@ void Grid::draw() {
 
   attron(COLOR_PAIR(selected_colour_pair_));
 
-  // Clear previous structure_name_str values
+  // Clear previous values
+  mvaddstr(items_[0].size() + top_offset_ + 1, col / 2 - items_.size() / 2,
+           std::string(items_.size(), ' ').c_str());
   mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
            std::string(items_.size(), ' ').c_str());
 
