@@ -39,7 +39,7 @@ struct Structure {
 
   static std::unordered_map<StructureType, const wchar_t *> structure_icons;
   static std::unordered_map<StructureType, std::string> structure_names;
-  static std::string get_random_name(StructureType, StructureStatusType);
+  std::string GetRandomName(StructureType, StructureStatusType);
 
   std::string name;
   StructureType type;

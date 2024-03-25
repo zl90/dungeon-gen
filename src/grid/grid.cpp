@@ -104,9 +104,14 @@ void Grid::draw() {
 
   std::string terrain_str = "Terrain: ";
   std::string structure_name_str = "Structure: ";
+  std::string owner_name_str = "Structure owner: ";
   if (items_[cursor_.x][cursor_.y].structure.has_value()) {
     structure_name_str =
         "Structure: " + items_[cursor_.x][cursor_.y].structure->name;
+    if (items_[cursor_.x][cursor_.y].structure->owner.has_value()) {
+      owner_name_str = "Structure owner: " +
+                       items_[cursor_.x][cursor_.y].structure->owner->name;
+    }
   }
 
   init_color(1, 800, 800, 800);
@@ -119,11 +124,15 @@ void Grid::draw() {
            std::string(items_.size(), ' ').c_str());
   mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
            std::string(items_.size(), ' ').c_str());
+  mvaddstr(items_[0].size() + top_offset_ + 3, col / 2 - items_.size() / 2,
+           std::string(items_.size(), ' ').c_str());
 
   mvaddstr(items_[0].size() + top_offset_ + 1, col / 2 - items_.size() / 2,
            terrain_str.c_str());
   mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
            structure_name_str.c_str());
+  mvaddstr(items_[0].size() + top_offset_ + 3, col / 2 - items_.size() / 2,
+           owner_name_str.c_str());
 }
 
 void Grid::map_basic_terrain_() {

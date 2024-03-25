@@ -32,13 +32,13 @@ Structure::Structure(StructureType type) {
   StructureStatusType status = StructureStatusType::Abandoned;
   this->type = type;
   this->status = status;
-  this->name = Structure::get_random_name(type, status);
+  this->name = Structure::GetRandomName(type, status);
 }
 
 Structure::Structure(StructureType type, StructureStatusType status) {
   this->type = type;
   this->status = status;
-  this->name = Structure::get_random_name(type, status);
+  this->name = Structure::GetRandomName(type, status);
 }
 
 std::vector<std::string> random_name_prefixes = {
@@ -48,12 +48,15 @@ std::vector<std::string> random_name_suffixes = {"dor", "orin", "wyn", "vyn",
                                                  "dil", "wynn", "nor", "droth",
                                                  "kor", "kon",  "korn"};
 
-std::string Structure::get_random_name(StructureType type,
-                                       StructureStatusType status) {
+std::string Structure::GetRandomName(StructureType type,
+                                     StructureStatusType status) {
   // @TODO: improve random name generation.
   // Use the status in the name. Add random accents. Possibly keep lists of
   // existing structures to prevent duplicate names?
   std::string output;
+  if (owner.has_value()) {
+    output += Unit::structure_race_names[owner->race] + " ";
+  }
   output += Structure::structure_names[type];
   output += " of ";
 
