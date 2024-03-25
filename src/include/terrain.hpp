@@ -30,6 +30,7 @@ enum class TemperatureType {
 struct Terrain {
   static std::unordered_map<TerrainType, const wchar_t *> terrain_icons;
   static std::unordered_map<TerrainType, std::string> terrain_names;
+  static std::unordered_map<TemperatureType, std::string> temperature_names;
 
   TerrainType type;
   TemperatureType temperature;

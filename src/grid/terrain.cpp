@@ -29,3 +29,9 @@ std::unordered_map<TerrainType, std::string> Terrain::terrain_names = {
     {TerrainType::Chaparral, "Chaparral"},
     {TerrainType::Ocean, "Ocean"},
 };
+
+std::unordered_map<TemperatureType, std::string> Terrain::temperature_names = {
+    {TemperatureType::Temperate, "Temperate"}, {TemperatureType::Hot, "Hot"},
+    {TemperatureType::Humid, "Humid"},         {TemperatureType::Cold, "Cold"},
+    {TemperatureType::Frigid, "Frigid"},
+};
