@@ -32,6 +32,7 @@ struct Unit {
   static Unit get_random_good_unit();
   static Unit get_random_lesser_evil_unit();
   static std::unordered_map<RaceType, std::string> race_names;
+  static std::unordered_map<RaceType, std::string> structure_race_names;
   static std::unordered_map<RaceType, std::vector<std::string>>
       random_name_prefixes_by_race;
   static std::unordered_map<RaceType, std::vector<std::string>>
@@ -45,6 +46,7 @@ struct Unit {
 
   Unit(const Unit &obj);
   Unit &operator=(const Unit &obj);
+  auto GetRandomName() -> std::string;
 
   std::string name;
   std::optional<Weapon> weapon;

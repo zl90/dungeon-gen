@@ -24,7 +24,7 @@ std::vector<Unit> Unit::unit_templates = {
     {"", Weapon{}, Armour{}, {}, History{}, 80, RaceType::Gelatinid},
 };
 
-static std::unordered_map<RaceType, std::string> race_names = {
+std::unordered_map<RaceType, std::string> Unit::race_names = {
     {RaceType::Human, "Human"},     {RaceType::Dwarf, "Dwarf"},
     {RaceType::Elf, "Elf"},         {RaceType::Goblin, "Goblin"},
     {RaceType::Orc, "Orc"},         {RaceType::Ogre, "Ogre"},
@@ -35,7 +35,7 @@ static std::unordered_map<RaceType, std::string> race_names = {
     {RaceType::Spirit, "Spirit"},   {RaceType::Gelatinid, "Gelatinid"},
 };
 
-static std::unordered_map<RaceType, std::string> structure_race_names = {
+std::unordered_map<RaceType, std::string> Unit::structure_race_names = {
     {RaceType::Human, "Human"},     {RaceType::Dwarf, "Dwarvish"},
     {RaceType::Elf, "Elvish"},      {RaceType::Goblin, "Goblin"},
     {RaceType::Orc, "Orcish"},      {RaceType::Ogre, "Ogre"},
@@ -46,8 +46,8 @@ static std::unordered_map<RaceType, std::string> structure_race_names = {
     {RaceType::Spirit, "Spirit"},   {RaceType::Gelatinid, "Gelatinid"},
 };
 
-static std::unordered_map<RaceType, std::vector<std::string>>
-    random_name_prefixes_by_race = {
+std::unordered_map<RaceType, std::vector<std::string>>
+    Unit::random_name_prefixes_by_race = {
         {RaceType::Elf,
          {"Ald", "El", "Gal", "Thal", "Mer", "Var", "Zan", "Mor", "Ili", "Aer",
           "Mal", "Moel", "Fel", "Fal", "Fen", "Fin", "Fini"}},
@@ -107,8 +107,8 @@ static std::unordered_map<RaceType, std::vector<std::string>>
          {"Gel", "Glo", "Slime", "Muc", "Ooze", "Jell", "Slop", "Glop", "Gunk",
           "Blob", "Mire", "Gelatin", "Gelid", "Squelch", "Visc"}}};
 
-static std::unordered_map<RaceType, std::vector<std::string>>
-    random_name_suffixes_by_race = {
+std::unordered_map<RaceType, std::vector<std::string>>
+    Unit::random_name_suffixes_by_race = {
         {RaceType::Elf,
          {"dor", "orin", "wyn", "vyn", "dil", "wynn", "nor", "droth", "kor",
           "kon", "korn"}},
@@ -225,8 +225,8 @@ Unit Unit::get_random_lesser_evil_unit() {
 Unit::Unit() {
   // Completely random unit
   int random_choice = rand() % Unit::unit_templates.size();
-  // TODO: generate a random name according to race type.
   *this = Unit::unit_templates[random_choice];
+  name = GetRandomName();
 }
 
 Unit::Unit(RaceType type) {
@@ -236,6 +236,7 @@ Unit::Unit(RaceType type) {
 
   if (it != unit_templates.end()) {
     *this = *it;
+    name = GetRandomName();
   } else {
     throw std::runtime_error("Unit not found for RaceType");
   }
@@ -268,4 +269,12 @@ Unit &Unit::operator=(const Unit &other) {
     race = other.race;
   }
   return *this;
+}
+
+auto Unit::GetRandomName() -> std::string {
+  std::vector<std::string> prefixes = Unit::random_name_prefixes_by_race[race];
+  std::vector<std::string> suffixes = Unit::random_name_suffixes_by_race[race];
+
+  return prefixes[rand() % prefixes.size()] +
+         suffixes[rand() % suffixes.size()];
 }
