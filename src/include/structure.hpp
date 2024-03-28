@@ -36,10 +36,18 @@ enum class StructureStatusType {
 struct Structure {
   Structure(StructureType type);
   Structure(StructureType type, StructureStatusType status);
+  Structure(StructureType type, StructureStatusType status, Unit owner);
 
   static std::unordered_map<StructureType, const wchar_t *> structure_icons;
   static std::unordered_map<StructureType, std::string> structure_names;
-  std::string GetRandomName(StructureType, StructureStatusType);
+  static std::unordered_map<RaceType, std::vector<std::string>>
+      random_name_prefixes_by_race_for_structure;
+  static std::unordered_map<RaceType, std::vector<std::string>>
+      random_name_suffixes_by_race_for_structure;
+  static std::vector<std::string> random_name_prefixes;
+  static std::vector<std::string> random_name_suffixes;
+
+  auto GetRandomName(StructureType, StructureStatusType) -> std::string;
 
   std::string name;
   StructureType type;

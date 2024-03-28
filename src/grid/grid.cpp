@@ -105,6 +105,10 @@ void Grid::draw() {
   std::string terrain_str = "Terrain: ";
   std::string structure_name_str = "Structure: ";
   std::string owner_name_str = "Structure owner: ";
+  terrain_str +=
+      Terrain::temperature_names[items_[cursor_.x][cursor_.y]
+                                     .terrain.temperature] +
+      " " + Terrain::terrain_names[items_[cursor_.x][cursor_.y].terrain.type];
   if (items_[cursor_.x][cursor_.y].structure.has_value()) {
     structure_name_str =
         "Structure: " + items_[cursor_.x][cursor_.y].structure->name;
@@ -220,8 +224,8 @@ void Grid::map_fortresses_() {
       if (fortress_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
         Unit owner;
-        items_[i][j].structure = Structure(StructureType::Fortress);
-        items_[i][j].structure->owner = owner;
+        items_[i][j].structure =
+            Structure(StructureType::Fortress, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Fortress];
@@ -238,9 +242,9 @@ void Grid::map_settlements_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (settlement_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        Unit owner = Unit::get_random_good_unit();
-        items_[i][j].structure = Structure(StructureType::Settlement);
-        items_[i][j].structure->owner = owner;
+        Unit owner = Unit::GetRandomGoodUnit();
+        items_[i][j].structure = Structure(StructureType::Settlement,
+                                           StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon =
@@ -259,8 +263,8 @@ void Grid::map_inns_() {
       if (inn_heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
         Unit owner;
-        items_[i][j].structure = Structure(StructureType::Inn);
-        items_[i][j].structure->owner = owner;
+        items_[i][j].structure =
+            Structure(StructureType::Inn, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Inn];
@@ -293,9 +297,9 @@ void Grid::map_bridges_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        Unit owner = Unit::get_random_good_unit();
-        items_[i][j].structure = Structure(StructureType::Bridge);
-        items_[i][j].structure->owner = owner;
+        Unit owner = Unit::GetRandomGoodUnit();
+        items_[i][j].structure =
+            Structure(StructureType::Bridge, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
 
@@ -330,9 +334,9 @@ void Grid::map_libraries_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        Unit owner = Unit::get_random_good_unit();
-        items_[i][j].structure = Structure(StructureType::Library);
-        items_[i][j].structure->owner = owner;
+        Unit owner = Unit::GetRandomGoodUnit();
+        items_[i][j].structure =
+            Structure(StructureType::Library, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
 
@@ -350,9 +354,9 @@ void Grid::map_pits_() {
     for (unsigned int j = 0; j < height_; j++) {
       if (heatmap[i][j] > 0.0f &&
           items_[i][j].terrain.type != TerrainType::Ocean) {
-        Unit owner = Unit::get_random_lesser_evil_unit();
-        items_[i][j].structure = Structure(StructureType::Pit);
-        items_[i][j].structure->owner = owner;
+        Unit owner = Unit::GetRandomLesserEvilUnit();
+        items_[i][j].structure =
+            Structure(StructureType::Pit, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Pit];

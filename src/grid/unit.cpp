@@ -96,7 +96,8 @@ std::unordered_map<RaceType, std::vector<std::string>>
           "Phant"}},
         {RaceType::Gnome,
          {"Alb", "Barb", "Dig", "Fos", "Gnarl", "Hob", "Ill", "Knick", "Knurl",
-          "Min", "Nock", "Pebbl", "Rack", "Rip", "Scratch", "Thim", "Weld"}},
+          "Lick", "Min", "Nock", "Pebbl", "Rack", "Rip", "Scratch", "Thim",
+          "Weld"}},
         {RaceType::Nymph,
          {"Aqua", "Drya", "Eco", "Flor", "Hali", "Limna", "Meli", "Nai", "Orea",
           "Peg", "Styra", "Undi", "Xylo", "Zeph"}},
@@ -152,10 +153,10 @@ std::unordered_map<RaceType, std::vector<std::string>>
           "crypt", "grave",  "specter", "spirit", "curse",  "rot",   "death",
           "bloom", "flesh",  "dread",   "decay",  "shroud", "haunt"}},
         {RaceType::Gnome,
-         {"glimmer", "gear",    "knob",   "widget",  "sprocket",
-          "cog",     "whistle", "gadget", "tinker",  "clank",
-          "smudge",  "wrench",  "sprig",  "crank",   "twist",
-          "lever",   "ratchet", "screw",  "spindle", "spring"}},
+         {"glimmer", "gear",   "knob",   "widget", "sprocket", "cog",
+          "whistle", "gadget", "tinker", "clank",  "smudge",   "wrench",
+          "sprig",   "crank",  "twist",  "lever",  "ratchet",  "screw",
+          "spindle", "spring", "staph"}},
         {RaceType::Nymph,
          {"bloom",  "dew",   "flower", "glen",   "harp",  "lark", "maiden",
           "nymph",  "quill", "rose",   "shade",  "thorn", "veil", "whisper",
@@ -170,7 +171,60 @@ std::unordered_map<RaceType, std::vector<std::string>>
           "goo",  "jelly", "slop",   "glop",   "gloop", "squelch", "plop",
           "plop", "mire",  "jiggle", "squish", "drip",  "drop"}}};
 
-Unit Unit::get_random_good_unit() {
+std::unordered_map<RaceType, std::vector<std::string>>
+    Unit::random_surnames_by_race = {
+        {RaceType::Elf,
+         {"Silverleaf", "Starfall", "Moonshadow", "Swiftwind", "Brightglow",
+          "Forestwalker", "Leafwhisper", "Sunfire", "Dawnstar"}},
+        {RaceType::Dwarf,
+         {"Stonehammer", "Ironbeard", "Goldvein", "Steelaxe", "Deepdelver",
+          "Mountainheart", "Stoutshield", "Honorforge", "Cliffbreaker"}},
+        {RaceType::Human,
+         {"Strongarm", "Battleborn", "Ironside", "Swiftblade", "Stormbringer",
+          "Warguard", "Oathkeeper", "Bladewind", "Steelheart"}},
+        {RaceType::Goblin,
+         {"Greenskin", "Foulbreath", "Sludgebelly", "Mudfoot", "Wartooth",
+          "Gloomchewer", "Stinkclaw", "Rotgut", "Miremaw"}},
+        {RaceType::Orc,
+         {"Bloodfist", "Skullsmasher", "Goreblade", "Darkheart", "Ironhide",
+          "Ragefang", "Bonecrusher", "Warbringer", "Doomhammer"}},
+        {RaceType::Ogre,
+         {"Bonecrusher", "Ravenshadow", "Gutripper", "Mudgrinder",
+          "Skullcracker", "Fleshrend", "Rockmaw", "Deathgrasp", "Grimscale"}},
+        {RaceType::Troll,
+         {"Rockhide", "Foulbelly", "Mudmaw", "Thornback", "Stoneclaw",
+          "Gorebelly", "Muckfoot", "Boulderback", "Gloomtooth"}},
+        {RaceType::Arachnid,
+         {"Venomweb", "Silkspinner", "Creepclaw", "Fangchitter", "Legcreeper",
+          "Webweaver", "Skittershade", "Toxicfang", "Huntsilk"}},
+        {RaceType::ToadMan,
+         {"Swampgrip", "Wartongue", "Muckskin", "Slimebelly", "Croakspit",
+          "Bogwader", "Marshmaw", "Goofoot", "Pondskin"}},
+        {RaceType::Fairy,
+         {"Stardust", "Glimmerwing", "Moonbeam", "Dewdrop", "Blossomheart",
+          "Frostpetal", "Whisperbreeze", "Sunsparkle", "Gleamwing"}},
+        {RaceType::Dragon,
+         {"Flamecrest", "Drakescale", "Wyrmtongue", "Fireclaw", "Scaleshadow",
+          "Dreadfire", "Wyrmheart", "Dragonflame", "Scalecrusher"}},
+        {RaceType::Undead,
+         {"Gravewalker", "Soulreaper", "Bonegnasher", "Shadowclaw", "Dreadmoan",
+          "Gravehowl", "Soulrend", "Bonechill", "Doomshade"}},
+        {RaceType::Gnome,
+         {"Gearspark", "Tinkerwhiz", "Gadgetgleam", "Cogsprocket",
+          "Whistlewick", "Sparkblast", "Clockwork", "Gizmogear",
+          "Tinkerflame"}},
+        {RaceType::Nymph,
+         {"Waterlily", "Windwhisper", "Leafdance", "Frostbloom", "Sunshower",
+          "Moonshadow", "Starglow", "Dewdrop", "Breezeleaf"}},
+        {RaceType::Spirit,
+         {"Etherealwind", "Shadeglow", "Soulshiver", "Phantomcry",
+          "Wraithwhisper", "Ghostwail", "Shadowbreeze", "Soulchill",
+          "Echosong"}},
+        {RaceType::Gelatinid,
+         {"Slimesquish", "Gooeyglop", "Jellybelly", "Muckmold", "Slopstain",
+          "Glopgush", "Slimecreek", "Muckslime", "Gelglop"}}};
+
+Unit Unit::GetRandomGoodUnit() {
   int random_choice = rand() % 3;
   RaceType race_type;
 
@@ -193,7 +247,7 @@ Unit Unit::get_random_good_unit() {
   return unit;
 }
 
-Unit Unit::get_random_lesser_evil_unit() {
+Unit Unit::GetRandomLesserEvilUnit() {
   int random_choice = rand() % 5;
   RaceType race_type;
 
@@ -274,7 +328,9 @@ Unit &Unit::operator=(const Unit &other) {
 auto Unit::GetRandomName() -> std::string {
   std::vector<std::string> prefixes = Unit::random_name_prefixes_by_race[race];
   std::vector<std::string> suffixes = Unit::random_name_suffixes_by_race[race];
+  std::vector<std::string> surnames = Unit::random_surnames_by_race[race];
 
   return prefixes[rand() % prefixes.size()] +
-         suffixes[rand() % suffixes.size()];
+         suffixes[rand() % suffixes.size()] + " " +
+         surnames[rand() % surnames.size()];
 }

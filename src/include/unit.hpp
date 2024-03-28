@@ -29,14 +29,16 @@ enum class RaceType {
 
 struct Unit {
   static std::vector<Unit> unit_templates;
-  static Unit get_random_good_unit();
-  static Unit get_random_lesser_evil_unit();
+  static Unit GetRandomGoodUnit();
+  static Unit GetRandomLesserEvilUnit();
   static std::unordered_map<RaceType, std::string> race_names;
   static std::unordered_map<RaceType, std::string> structure_race_names;
   static std::unordered_map<RaceType, std::vector<std::string>>
       random_name_prefixes_by_race;
   static std::unordered_map<RaceType, std::vector<std::string>>
       random_name_suffixes_by_race;
+  static std::unordered_map<RaceType, std::vector<std::string>>
+      random_surnames_by_race;
 
   Unit();
   Unit(RaceType race);
