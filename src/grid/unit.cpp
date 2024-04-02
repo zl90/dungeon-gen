@@ -282,6 +282,44 @@ Unit Unit::GetRandomLesserEvilUnit() {
   return unit;
 }
 
+Unit Unit::GetRandomFortressOwnerUnit() {
+  int random_choice = rand() % 8;
+  RaceType race_type;
+
+  switch (random_choice) {
+  case 0:
+    race_type = RaceType::Goblin;
+    break;
+  case 1:
+    race_type = RaceType::Orc;
+    break;
+  case 2:
+    race_type = RaceType::Arachnid;
+    break;
+  case 3:
+    race_type = RaceType::Undead;
+    break;
+  case 4:
+    race_type = RaceType::Ogre;
+    break;
+  case 5:
+    race_type = RaceType::Human;
+    break;
+  case 6:
+    race_type = RaceType::Dwarf;
+    break;
+  case 7:
+    race_type = RaceType::Elf;
+    break;
+  default:
+    race_type = RaceType::Goblin;
+    break;
+  }
+
+  Unit unit(race_type);
+  return unit;
+}
+
 Unit::Unit() {
   // Completely random unit
   int random_choice = rand() % Unit::unit_templates.size();

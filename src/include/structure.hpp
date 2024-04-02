@@ -30,7 +30,9 @@ enum class StructureStatusType {
   Consecrated,
   Hidden,
   Collapsed,
-  New
+  New,
+  Ancient,
+  Old,
 };
 
 struct Structure {
