@@ -7,7 +7,7 @@ void game_loop() {
 
   keypad(stdscr, TRUE);
 
-  g.draw();
+  g.Draw();
   refresh();
 
   while (running) {
@@ -19,16 +19,16 @@ void game_loop() {
       running = false;
       break;
     case KEY_UP:
-      g.cursor_up();
+      g.CursorUp();
       break;
     case KEY_DOWN:
-      g.cursor_down();
+      g.CursorDown();
       break;
     case KEY_RIGHT:
-      g.cursor_right();
+      g.CursorRight();
       break;
     case KEY_LEFT:
-      g.cursor_left();
+      g.CursorLeft();
       break;
     default:
       break;
@@ -37,7 +37,7 @@ void game_loop() {
     // Update game state?
 
     // Render
-    g.draw();
+    g.Draw();
     refresh();
 
     // Simulate fixed time step (16ms, approx 60fps)

@@ -17,6 +17,14 @@ set(SOURCES
     src/game_loop/game_loop.cpp
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_XOPEN_SOURCE_EXTENDED")
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(LIBRARIES_TO_LINK ncursesw)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(LIBRARIES_TO_LINK ncurses)
+endif()
+
 add_executable(DungeonGenerator ${SOURCES})
-target_link_libraries(DungeonGenerator ncursesw)
+target_link_libraries(DungeonGenerator ${LIBRARIES_TO_LINK})
 target_include_directories(DungeonGenerator PRIVATE ${CURSES_INCLUDE_DIRS})
