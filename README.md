@@ -1,5 +1,5 @@
 # dungeon-gen
-A 2D dungeon/terrain generator I built for the purposes of learning the NCurses library. The game is played entirely in your terminal.
+A 2D world/dungeon/terrain generator I built for the purposes of learning the NCurses library. The game is played entirely in your terminal.
 
 As of April 2024, the game is currently a very minimal immitation of the Dwarf Fortress world generator. Watch this space for updates!
 
