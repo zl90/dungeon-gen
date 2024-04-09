@@ -1,5 +1,12 @@
 # dungeon-gen
-A 2D dungeon/terrain generator I built for the purposes of learning the NCurses library
+A 2D dungeon/terrain generator I built for the purposes of learning the NCurses library. The game is played entirely in your terminal.
+
+As of April 2024, the game is currently a very minimal immitation of the Dwarf Fortress world generator. Watch this space for updates!
+
+![Screenshot](https://github.com/zl90/dungeon-gen/blob/main/screenshot.jpg?raw=true)
+
+## How to play
+- Use the arrow keys to move the yellow cursor around the map. This lets you inspect each location on the grid.
 
 ## How to run on Debian/Ubuntu Linux
 1. Clone the repo.
