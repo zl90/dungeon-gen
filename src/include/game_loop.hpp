@@ -6,4 +6,4 @@
 #include <ncurses.h>
 #include <thread>
 
-void game_loop();
+auto GameLoop() -> void;

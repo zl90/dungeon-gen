@@ -18,7 +18,7 @@ int main() {
 
   start_color();
 
-  game_loop();
+  GameLoop();
 
   endwin();
 

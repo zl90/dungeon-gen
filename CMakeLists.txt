@@ -14,6 +14,7 @@ set(SOURCES
     src/grid/terrain.cpp
     src/grid/structure.cpp
     src/grid/unit.cpp
+    src/grid/cursor.cpp
     src/game_loop/game_loop.cpp
 )
 

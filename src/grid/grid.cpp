@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <ncurses.h>
 #include <random>
@@ -64,7 +65,47 @@ Grid::Grid(unsigned int width, unsigned int height)
   MapLibraries();
   MapTrollsDens();
   MapPits();
+
+  input_background_thread_.emplace([&]() { StartInputBackgroundThread(); });
 }
+
+Grid::~Grid() {
+  is_background_thread_running_ = false;
+  if (input_background_thread_.has_value()) {
+    input_background_thread_->join();
+  }
+}
+
+void Grid::StartInputBackgroundThread() {
+  while (is_background_thread_running_) {
+    int input = getch();
+
+    switch (input) {
+    case 'q':
+      is_game_running_ = false;
+      break;
+    case KEY_UP:
+      CursorUp();
+      break;
+    case KEY_DOWN:
+      CursorDown();
+      break;
+    case KEY_RIGHT:
+      CursorRight();
+      break;
+    case KEY_LEFT:
+      CursorLeft();
+      break;
+    default:
+      break;
+    }
+
+    // Simulate fixed time step (16ms, approx 60fps)
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+  }
+}
+
+auto Grid::IsGameRunning() -> bool { return is_game_running_; }
 
 void Grid::CursorDown() {
   if (cursor_.y + 1 < height_) {
@@ -541,7 +582,7 @@ GridItem Grid::GenerateOceanTerrain() {
 }
 
 void Grid::SetColourForItem(GridItem item, int x, int y) {
-  if (x == cursor_.x && y == cursor_.y) {
+  if (x == cursor_.x && y == cursor_.y && cursor_.GetBlinkState()) {
     Colour background_colour = GridItem::colours[ColourType::Yellow];
     int r = background_colour.r;
     int g = background_colour.g;
