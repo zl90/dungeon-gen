@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <optional>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -11,6 +13,8 @@ class Grid {
 public:
   Grid(unsigned int width, unsigned int height);
   auto Draw() -> void;
+  auto IsGameRunning() -> bool;
+
   auto CursorUp() -> void;
   auto CursorDown() -> void;
   auto CursorLeft() -> void;
@@ -29,6 +33,8 @@ private:
   uint8_t selected_colour_pair_ = 1;
 
   HeatMap terrain_heatmap_;
+
+  bool is_game_running_ = true;
 
   auto MapBasicTerrain() -> void;
   auto MapDesertTerrain() -> void;

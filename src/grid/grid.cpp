@@ -1,3 +1,5 @@
+#include <atomic>
+#include <chrono>
 #include <iostream>
 #include <ncurses.h>
 #include <random>
@@ -66,27 +68,33 @@ Grid::Grid(unsigned int width, unsigned int height)
   MapPits();
 }
 
+auto Grid::IsGameRunning() -> bool { return is_game_running_; }
+
 void Grid::CursorDown() {
   if (cursor_.y + 1 < height_) {
     cursor_.y++;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
 void Grid::CursorUp() {
   if (cursor_.y - 1 >= 0) {
     cursor_.y--;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
 void Grid::CursorLeft() {
   if (cursor_.x - 1 >= 0) {
     cursor_.x--;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
 void Grid::CursorRight() {
   if (cursor_.x + 1 < width_) {
     cursor_.x++;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
@@ -541,7 +549,7 @@ GridItem Grid::GenerateOceanTerrain() {
 }
 
 void Grid::SetColourForItem(GridItem item, int x, int y) {
-  if (x == cursor_.x && y == cursor_.y) {
+  if (x == cursor_.x && y == cursor_.y && cursor_.GetBlinkState()) {
     Colour background_colour = GridItem::colours[ColourType::Yellow];
     int r = background_colour.r;
     int g = background_colour.g;

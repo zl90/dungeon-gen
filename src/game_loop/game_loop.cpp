@@ -1,40 +1,42 @@
 #include "../include/game_loop.hpp"
 
 // @TODO: this will need to be made into a class eventually
-void game_loop() {
+auto GameLoop() -> void {
   bool running = true;
   Grid g(84, 36);
 
   keypad(stdscr, TRUE);
+  cbreak();
+  noecho();
+  nodelay(stdscr, TRUE); // Enable non-blocking input
 
   g.Draw();
   refresh();
 
   while (running) {
-    // Process input
     int input = getch();
 
-    switch (input) {
-    case 'q':
-      running = false;
-      break;
-    case KEY_UP:
-      g.CursorUp();
-      break;
-    case KEY_DOWN:
-      g.CursorDown();
-      break;
-    case KEY_RIGHT:
-      g.CursorRight();
-      break;
-    case KEY_LEFT:
-      g.CursorLeft();
-      break;
-    default:
-      break;
+    if (input != ERR) {
+      switch (input) {
+      case 'q':
+        running = false;
+        break;
+      case KEY_UP:
+        g.CursorUp();
+        break;
+      case KEY_DOWN:
+        g.CursorDown();
+        break;
+      case KEY_RIGHT:
+        g.CursorRight();
+        break;
+      case KEY_LEFT:
+        g.CursorLeft();
+        break;
+      default:
+        break;
+      }
     }
-
-    // Update game state?
 
     // Render
     g.Draw();
