@@ -1,5 +1,6 @@
 #include "../include/cursor.hpp"
 #include <chrono>
+#include <mutex>
 
 Cursor::Cursor() {
   cursor_blink_background_thread_.emplace(
@@ -15,16 +16,21 @@ auto Cursor::TimeSinceEpochInMilliseconds() -> uint64_t {
 }
 
 auto Cursor::StartCursorBlinkBackgroundThread() -> void {
-  auto start = TimeSinceEpochInMilliseconds();
-
   while (is_background_thread_running_) {
     auto now = TimeSinceEpochInMilliseconds();
 
-    if (now - start >= cursor_blink_interval_milliseconds_) {
+    if (now - blink_start_time_ >= cursor_blink_interval_milliseconds_) {
       blink_state_ = !blink_state_;
-      start = now;
+      blink_start_time_ = now;
     }
   }
+}
+
+auto Cursor::RefreshBlinkTimer() -> void {
+  auto now = TimeSinceEpochInMilliseconds();
+
+  blink_state_ = true;
+  blink_start_time_ = now;
 }
 
 Cursor::~Cursor() {

@@ -1,3 +1,4 @@
+#include <atomic>
 #include <chrono>
 #include <iostream>
 #include <ncurses.h>
@@ -65,44 +66,6 @@ Grid::Grid(unsigned int width, unsigned int height)
   MapLibraries();
   MapTrollsDens();
   MapPits();
-
-  input_background_thread_.emplace([&]() { StartInputBackgroundThread(); });
-}
-
-Grid::~Grid() {
-  is_background_thread_running_ = false;
-  if (input_background_thread_.has_value()) {
-    input_background_thread_->join();
-  }
-}
-
-void Grid::StartInputBackgroundThread() {
-  while (is_background_thread_running_) {
-    int input = getch();
-
-    switch (input) {
-    case 'q':
-      is_game_running_ = false;
-      break;
-    case KEY_UP:
-      CursorUp();
-      break;
-    case KEY_DOWN:
-      CursorDown();
-      break;
-    case KEY_RIGHT:
-      CursorRight();
-      break;
-    case KEY_LEFT:
-      CursorLeft();
-      break;
-    default:
-      break;
-    }
-
-    // Simulate fixed time step (16ms, approx 60fps)
-    std::this_thread::sleep_for(std::chrono::milliseconds(16));
-  }
 }
 
 auto Grid::IsGameRunning() -> bool { return is_game_running_; }
@@ -110,24 +73,28 @@ auto Grid::IsGameRunning() -> bool { return is_game_running_; }
 void Grid::CursorDown() {
   if (cursor_.y + 1 < height_) {
     cursor_.y++;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
 void Grid::CursorUp() {
   if (cursor_.y - 1 >= 0) {
     cursor_.y--;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
 void Grid::CursorLeft() {
   if (cursor_.x - 1 >= 0) {
     cursor_.x--;
+    cursor_.RefreshBlinkTimer();
   }
 }
 
 void Grid::CursorRight() {
   if (cursor_.x + 1 < width_) {
     cursor_.x++;
+    cursor_.RefreshBlinkTimer();
   }
 }
 

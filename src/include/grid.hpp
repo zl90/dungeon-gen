@@ -12,9 +12,13 @@
 class Grid {
 public:
   Grid(unsigned int width, unsigned int height);
-  ~Grid();
   auto Draw() -> void;
   auto IsGameRunning() -> bool;
+
+  auto CursorUp() -> void;
+  auto CursorDown() -> void;
+  auto CursorLeft() -> void;
+  auto CursorRight() -> void;
 
 private:
   unsigned int width_;
@@ -31,18 +35,6 @@ private:
   HeatMap terrain_heatmap_;
 
   bool is_game_running_ = true;
-
-  /** Background thread responsible for handling user input. */
-  std::optional<std::thread> input_background_thread_;
-  /** Used to terminate the background thread upon destruction. */
-  bool is_background_thread_running_ = true;
-
-  auto StartInputBackgroundThread() -> void;
-
-  auto CursorUp() -> void;
-  auto CursorDown() -> void;
-  auto CursorLeft() -> void;
-  auto CursorRight() -> void;
 
   auto MapBasicTerrain() -> void;
   auto MapDesertTerrain() -> void;

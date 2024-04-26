@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <optional>
 #include <thread>
 
@@ -12,6 +13,7 @@ public:
   int y = 0;
 
   auto GetBlinkState() -> bool;
+  auto RefreshBlinkTimer() -> void;
 
 private:
   /**
@@ -20,7 +22,8 @@ private:
    * false = OFF.
    */
   bool blink_state_ = true;
-  int cursor_blink_interval_milliseconds_ = 200;
+  int cursor_blink_interval_milliseconds_ = 300;
+  uint64_t blink_start_time_ = 0;
 
   /** The background thread responsible for blinking the cursor on and off. */
   std::optional<std::thread> cursor_blink_background_thread_;
