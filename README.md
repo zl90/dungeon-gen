@@ -10,9 +10,10 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 
 ## How to run on Debian/Ubuntu Linux
 1. Clone the repo.
-2. Install [cmake](https://cmake.org/) with the command `sudo apt-get install cmake`
-3. Install the [ncurses library](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/) with the command: `sudo apt-get install libncurses5-dev libncursesw5-dev`
-4. From the project root directory run the build script: `./build.sh`. This will build and run the program (make sure your terminal is in fullscreen mode, or the game won't display correctly).
+2. Make sure you have a C++ compiler installed: `sudo apt-get install build-essential`
+3. Install [cmake](https://cmake.org/) with the command `sudo apt-get install cmake`
+4. Install the [ncurses library](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/) with the command: `sudo apt-get install libncurses5-dev libncursesw5-dev`
+5. From the project root directory run the build script: `./build.sh`. This will build and run the program (make sure your terminal is in fullscreen mode, or the game won't display correctly).
 
 ## How to run on MacOS terminal
 1. Clone the repo.
