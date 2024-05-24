@@ -259,8 +259,14 @@ void Grid::MapFortresses() {
             Structure(StructureType::Fortress, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
+
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
-        items_[i][j].icon = Structure::structure_icons[StructureType::Fortress];
+        int num_occupants = rand() % 20;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant(owner.race);
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -281,6 +287,7 @@ void Grid::MapSettlements() {
         items_[i][j].icon =
             Structure::structure_icons[StructureType::Settlement];
 
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 7;
         for (int k = 0; k < num_occupants; k++) {
@@ -306,6 +313,7 @@ void Grid::MapInns() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Inn];
 
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 7;
         for (int k = 0; k < num_occupants; k++) {
@@ -330,6 +338,7 @@ void Grid::MapCaves() {
         items_[i][j].colour = GridItem::colours[ColourType::Brown];
         items_[i][j].icon = Structure::structure_icons[StructureType::Cave];
 
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 4;
         for (int k = 0; k < num_occupants; k++) {
@@ -353,6 +362,8 @@ void Grid::MapBridges() {
             Structure(StructureType::Bridge, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
+
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Bridge];
       }
@@ -370,6 +381,8 @@ void Grid::MapMageTowers() {
         Unit owner = Unit::GetRandomGoodUnit();
         items_[i][j].structure = Structure(StructureType::Mage_Tower,
                                            StructureStatusType::Ancient, owner);
+
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         items_[i][j].colour = GridItem::colours[ColourType::Purple];
         items_[i][j].icon =
@@ -393,6 +406,7 @@ void Grid::MapLibraries() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Library];
 
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 2;
         for (int k = 0; k < num_occupants; k++) {
@@ -418,6 +432,7 @@ void Grid::MapPits() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].icon = Structure::structure_icons[StructureType::Pit];
 
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 10;
         for (int k = 0; k < num_occupants; k++) {
@@ -443,6 +458,7 @@ void Grid::MapTrollsDens() {
         items_[i][j].icon =
             Structure::structure_icons[StructureType::Trolls_Den];
 
+        items_[i][j].occupants.clear();
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 2;
         for (int k = 0; k < num_occupants; k++) {
