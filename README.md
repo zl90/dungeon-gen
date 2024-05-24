@@ -4,7 +4,7 @@ Generate a 2D fantasy world in your terminal!
 
 As of April 2024, the game is currently a very minimal immitation of the Dwarf Fortress world generator. Watch this space for updates!
 
-![Screenshot](https://github.com/zl90/dungeon-gen/blob/main/screenshot.jpg?raw=true)
+![Screenshot](https://github.com/zl90/dungeon-gen/blob/main/screenshot.png?raw=true)
 
 ## How to play
 
