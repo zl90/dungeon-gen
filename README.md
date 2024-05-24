@@ -1,4 +1,5 @@
 # dungeon-gen
+
 Generate a 2D fantasy world in your terminal!
 
 As of April 2024, the game is currently a very minimal immitation of the Dwarf Fortress world generator. Watch this space for updates!
@@ -6,9 +7,11 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 ![Screenshot](https://github.com/zl90/dungeon-gen/blob/main/screenshot.jpg?raw=true)
 
 ## How to play
+
 - Use the arrow keys to move the yellow cursor around the map. This lets you inspect each location on the grid.
 
 ## How to run on Debian/Ubuntu Linux
+
 1. Clone the repo.
 2. Make sure you have a C++ compiler installed: `sudo apt-get install build-essential`
 3. Install [cmake](https://cmake.org/) with the command `sudo apt-get install cmake`
@@ -16,6 +19,7 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 5. From the project root directory run the build script: `./build.sh`. This will build and run the program (make sure your terminal is in fullscreen mode, or the game won't display correctly).
 
 ## How to run on MacOS terminal
+
 1. Clone the repo.
 2. Install [cmake](https://cmake.org/) with the command `brew install cmake`
 3. Install the [ncurses library](https://formulae.brew.sh/formula/ncurses) with the command: `brew install ncurses`
@@ -24,7 +28,11 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 6. From the project root directory run the build script: `./build.sh`. This will build and run the program (make sure your terminal is in fullscreen mode, or the game won't display correctly).
 
 ## Ideas/TODOs
-- Basic cursor movement + information panel.
+
+- ~~Basic cursor movement + information panel.~~
+- Add occupants to terrain tiles.
+- Add treasure/loot to terrain tiles.
+- Display occupants + treasure in the info panel.
 - ~~Random name generation for Units based on RaceType.~~
 - ~~Random name generation for Structures based on StructureType and owner RaceType.~~
 - River tile generation (no clustered hotspots).
