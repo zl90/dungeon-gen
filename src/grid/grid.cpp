@@ -1,13 +1,16 @@
+#include "../include/grid.hpp"
+
+#include <curses.h>
+#include <ncurses.h>
+#include <wchar.h>
+
 #include <atomic>
 #include <chrono>
 #include <iostream>
-#include <ncurses.h>
 #include <random>
 #include <string>
 #include <vector>
-#include <wchar.h>
 
-#include "../include/grid.hpp"
 #include "../include/grid_item.hpp"
 #include "../include/heatmap.hpp"
 #include "../include/terrain.hpp"
@@ -98,34 +101,9 @@ void Grid::CursorRight() {
   }
 }
 
-void Grid::Draw() {
+auto Grid::DrawInfoPanel() -> void {
   int row, col;
   getmaxyx(stdscr, row, col);
-
-  for (int y = 0; y < items_[0].size(); y++) {
-    for (int x = 0; x < items_.size(); x++) {
-      SetColourForItem(items_[x][y], x, y);
-      mvaddwstr(top_offset_ + y, col / 2 - items_.size() / 2 + x,
-                items_[x][y].icon);
-      UnsetColour();
-    }
-  }
-
-  std::string terrain_str = "Terrain: ";
-  std::string structure_name_str = "Structure: ";
-  std::string owner_name_str = "Structure owner: ";
-  terrain_str +=
-      Terrain::temperature_names[items_[cursor_.x][cursor_.y]
-                                     .terrain.temperature] +
-      " " + Terrain::terrain_names[items_[cursor_.x][cursor_.y].terrain.type];
-  if (items_[cursor_.x][cursor_.y].structure.has_value()) {
-    structure_name_str =
-        "Structure: " + items_[cursor_.x][cursor_.y].structure->name;
-    if (items_[cursor_.x][cursor_.y].structure->owner.has_value()) {
-      owner_name_str = "Structure owner: " +
-                       items_[cursor_.x][cursor_.y].structure->owner->name;
-    }
-  }
 
   init_color(1, 800, 800, 800);
   init_pair(1, 1, COLOR_BLACK);
@@ -140,12 +118,46 @@ void Grid::Draw() {
   mvaddstr(items_[0].size() + top_offset_ + 3, col / 2 - items_.size() / 2,
            std::string(items_.size(), ' ').c_str());
 
+  std::string terrain_str = "Terrain: ";
+  std::string structure_name_str = "Structure: ";
+  std::string owner_name_str = "Structure owner: ";
+  terrain_str +=
+      Terrain::temperature_names[items_[cursor_.x][cursor_.y]
+                                     .terrain.temperature] +
+      " " + Terrain::terrain_names[items_[cursor_.x][cursor_.y].terrain.type];
+
+  if (items_[cursor_.x][cursor_.y].structure.has_value()) {
+    structure_name_str =
+        "Structure: " + items_[cursor_.x][cursor_.y].structure->name;
+    if (items_[cursor_.x][cursor_.y].structure->owner.has_value()) {
+      owner_name_str = "Structure owner: " +
+                       items_[cursor_.x][cursor_.y].structure->owner->name;
+    }
+  }
+
+  // Render new values
   mvaddstr(items_[0].size() + top_offset_ + 1, col / 2 - items_.size() / 2,
            terrain_str.c_str());
   mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
            structure_name_str.c_str());
   mvaddstr(items_[0].size() + top_offset_ + 3, col / 2 - items_.size() / 2,
            owner_name_str.c_str());
+}
+
+void Grid::Draw() {
+  int row, col;
+  getmaxyx(stdscr, row, col);
+
+  for (int y = 0; y < items_[0].size(); y++) {
+    for (int x = 0; x < items_.size(); x++) {
+      SetColourForItem(items_[x][y], x, y);
+      mvaddwstr(top_offset_ + y, col / 2 - items_.size() / 2 + x,
+                items_[x][y].icon);
+      UnsetColour();
+    }
+  }
+
+  DrawInfoPanel();
 }
 
 void Grid::MapBasicTerrain() {
@@ -513,18 +525,18 @@ GridItem Grid::GenerateForestTerrain() {
   int random_choice = rand() % 6;
   TerrainType forest_type;
   switch (random_choice) {
-  case 0:
-    forest_type = TerrainType::Conifer_Forest;
-    break;
-  case 1:
-    forest_type = TerrainType::Ash_Forest;
-    break;
-  case 2:
-    forest_type = TerrainType::Pine_Forest;
-    break;
-  default:
-    forest_type = TerrainType::Conifer_Forest;
-    break;
+    case 0:
+      forest_type = TerrainType::Conifer_Forest;
+      break;
+    case 1:
+      forest_type = TerrainType::Ash_Forest;
+      break;
+    case 2:
+      forest_type = TerrainType::Pine_Forest;
+      break;
+    default:
+      forest_type = TerrainType::Conifer_Forest;
+      break;
   }
 
   GridItem forest;

@@ -10,7 +10,7 @@
 #include "heatmap.hpp"
 
 class Grid {
-public:
+ public:
   Grid(unsigned int width, unsigned int height);
   auto Draw() -> void;
   auto IsGameRunning() -> bool;
@@ -20,7 +20,7 @@ public:
   auto CursorLeft() -> void;
   auto CursorRight() -> void;
 
-private:
+ private:
   unsigned int width_;
   unsigned int height_;
 
@@ -63,4 +63,5 @@ private:
   auto SetColourForItem(GridItem item, int x, int y) -> void;
 
   auto UnsetColour() -> void;
+  auto DrawInfoPanel() -> void;
 };
