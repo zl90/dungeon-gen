@@ -149,7 +149,8 @@ auto Grid::DrawInfoPanel() -> void {
   }
 
   for (const auto& occupant : current_grid_tile.occupants) {
-    occupants_str += occupant.name;
+    occupants_str +=
+        occupant.name + " (" + Unit::race_names[occupant.race] + ")";
     mvaddstr(items_[0].size() + top_offset_ + line++,
              col / 2 - items_.size() / 2, occupants_str.c_str());
     occupants_str = "                 ";
