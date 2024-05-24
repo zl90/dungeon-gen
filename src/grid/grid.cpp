@@ -104,6 +104,8 @@ void Grid::CursorRight() {
 auto Grid::DrawInfoPanel() -> void {
   int row, col;
   getmaxyx(stdscr, row, col);
+  auto current_grid_tile = items_[cursor_.x][cursor_.y];
+  const int INFO_PANEL_MAX_HEIGHT = 99;
 
   init_color(1, 800, 800, 800);
   init_pair(1, 1, COLOR_BLACK);
@@ -111,37 +113,47 @@ auto Grid::DrawInfoPanel() -> void {
   attron(COLOR_PAIR(selected_colour_pair_));
 
   // Clear previous values
-  mvaddstr(items_[0].size() + top_offset_ + 1, col / 2 - items_.size() / 2,
-           std::string(items_.size(), ' ').c_str());
-  mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
-           std::string(items_.size(), ' ').c_str());
-  mvaddstr(items_[0].size() + top_offset_ + 3, col / 2 - items_.size() / 2,
-           std::string(items_.size(), ' ').c_str());
+  for (int i = 1; i <= INFO_PANEL_MAX_HEIGHT; i++) {
+    mvaddstr(items_[0].size() + top_offset_ + i, col / 2 - items_.size() / 2,
+             std::string(items_.size(), ' ').c_str());
+  }
 
-  std::string terrain_str = "Terrain: ";
-  std::string structure_name_str = "Structure: ";
-  std::string owner_name_str = "Structure owner: ";
+  std::string terrain_str = "Terrain:         ";
+  std::string structure_name_str = "";
+  std::string owner_name_str = "";
   terrain_str +=
-      Terrain::temperature_names[items_[cursor_.x][cursor_.y]
-                                     .terrain.temperature] +
-      " " + Terrain::terrain_names[items_[cursor_.x][cursor_.y].terrain.type];
+      Terrain::temperature_names[current_grid_tile.terrain.temperature] + " " +
+      Terrain::terrain_names[current_grid_tile.terrain.type];
+  std::string occupants_str = "Occupants:       ";
 
-  if (items_[cursor_.x][cursor_.y].structure.has_value()) {
+  if (current_grid_tile.structure.has_value()) {
     structure_name_str =
-        "Structure: " + items_[cursor_.x][cursor_.y].structure->name;
-    if (items_[cursor_.x][cursor_.y].structure->owner.has_value()) {
-      owner_name_str = "Structure owner: " +
-                       items_[cursor_.x][cursor_.y].structure->owner->name;
+        "Structure:       " + current_grid_tile.structure->name;
+    if (current_grid_tile.structure->owner.has_value()) {
+      owner_name_str =
+          "Structure owner: " + current_grid_tile.structure->owner->name;
     }
   }
 
   // Render new values
-  mvaddstr(items_[0].size() + top_offset_ + 1, col / 2 - items_.size() / 2,
+  int line = 1;
+  mvaddstr(items_[0].size() + top_offset_ + line++, col / 2 - items_.size() / 2,
            terrain_str.c_str());
-  mvaddstr(items_[0].size() + top_offset_ + 2, col / 2 - items_.size() / 2,
-           structure_name_str.c_str());
-  mvaddstr(items_[0].size() + top_offset_ + 3, col / 2 - items_.size() / 2,
-           owner_name_str.c_str());
+  if (structure_name_str.length() > 0) {
+    mvaddstr(items_[0].size() + top_offset_ + line++,
+             col / 2 - items_.size() / 2, structure_name_str.c_str());
+  }
+  if (owner_name_str.length() > 0) {
+    mvaddstr(items_[0].size() + top_offset_ + line++,
+             col / 2 - items_.size() / 2, owner_name_str.c_str());
+  }
+
+  for (const auto& occupant : current_grid_tile.occupants) {
+    occupants_str += occupant.name;
+    mvaddstr(items_[0].size() + top_offset_ + line++,
+             col / 2 - items_.size() / 2, occupants_str.c_str());
+    occupants_str = "                 ";
+  }
 }
 
 void Grid::Draw() {
@@ -249,7 +261,6 @@ void Grid::MapFortresses() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Fortress];
-        items_[i][j].occupants.emplace_back(owner);
       }
     }
   }
@@ -270,7 +281,6 @@ void Grid::MapSettlements() {
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon =
             Structure::structure_icons[StructureType::Settlement];
-        items_[i][j].occupants.emplace_back(owner);
       }
     }
   }
@@ -290,7 +300,6 @@ void Grid::MapInns() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Inn];
-        items_[i][j].occupants.emplace_back(owner);
       }
     }
   }
@@ -328,7 +337,6 @@ void Grid::MapBridges() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Bridge];
-        items_[i][j].occupants.emplace_back(owner);
       }
     }
   }
@@ -367,7 +375,6 @@ void Grid::MapLibraries() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Library];
-        items_[i][j].occupants.emplace_back(owner);
       }
     }
   }
@@ -387,7 +394,6 @@ void Grid::MapPits() {
             GridItem::colours[GridItem::colours_by_race[owner.race]];
         items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Pit];
-        items_[i][j].occupants.emplace_back(owner);
       }
     }
   }
