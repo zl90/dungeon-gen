@@ -343,7 +343,7 @@ void Grid::MapCaves() {
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 4;
         for (int k = 0; k < num_occupants; k++) {
-          Unit occupant = Unit::GetRandomInnOccupant();
+          Unit occupant(owner.race);
           items_[i][j].occupants.push_back(occupant);
         }
       }
@@ -437,7 +437,7 @@ void Grid::MapPits() {
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 10;
         for (int k = 0; k < num_occupants; k++) {
-          Unit occupant = Unit::GetRandomInnOccupant();
+          Unit occupant(owner.race);
           items_[i][j].occupants.push_back(occupant);
         }
       }
@@ -463,7 +463,7 @@ void Grid::MapTrollsDens() {
         items_[i][j].occupants.push_back(owner);
         int num_occupants = rand() % 2;
         for (int k = 0; k < num_occupants; k++) {
-          Unit occupant = Unit::GetRandomInnOccupant();
+          Unit occupant(owner.race);
           items_[i][j].occupants.push_back(occupant);
         }
       }
