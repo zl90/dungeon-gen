@@ -39,6 +39,7 @@ struct Unit {
       random_surnames_by_race;
 
   static auto GetRandomGoodUnit() -> Unit;
+  static auto GetRandomInnOccupant() -> Unit;
   static auto GetRandomLesserEvilUnit() -> Unit;
   static auto GetRandomFortressOwnerUnit() -> Unit;
 

@@ -278,9 +278,15 @@ void Grid::MapSettlements() {
                                            StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
-        items_[i][j].occupants.push_back(owner);
         items_[i][j].icon =
             Structure::structure_icons[StructureType::Settlement];
+
+        items_[i][j].occupants.push_back(owner);
+        int num_occupants = rand() % 7;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant(owner.race);
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -298,8 +304,14 @@ void Grid::MapInns() {
             Structure(StructureType::Inn, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
-        items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Inn];
+
+        items_[i][j].occupants.push_back(owner);
+        int num_occupants = rand() % 7;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant = Unit::GetRandomInnOccupant();
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -315,9 +327,15 @@ void Grid::MapCaves() {
         Unit owner = Unit::GetRandomLesserEvilUnit();
         items_[i][j].structure =
             Structure(StructureType::Cave, StructureStatusType::Old, owner);
-        items_[i][j].occupants.push_back(owner);
         items_[i][j].colour = GridItem::colours[ColourType::Brown];
         items_[i][j].icon = Structure::structure_icons[StructureType::Cave];
+
+        items_[i][j].occupants.push_back(owner);
+        int num_occupants = rand() % 4;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant = Unit::GetRandomInnOccupant();
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -373,8 +391,14 @@ void Grid::MapLibraries() {
             Structure(StructureType::Library, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
-        items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Library];
+
+        items_[i][j].occupants.push_back(owner);
+        int num_occupants = rand() % 2;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant = Unit::GetRandomInnOccupant();
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -392,8 +416,14 @@ void Grid::MapPits() {
             Structure(StructureType::Pit, StructureStatusType::New, owner);
         items_[i][j].colour =
             GridItem::colours[GridItem::colours_by_race[owner.race]];
-        items_[i][j].occupants.push_back(owner);
         items_[i][j].icon = Structure::structure_icons[StructureType::Pit];
+
+        items_[i][j].occupants.push_back(owner);
+        int num_occupants = rand() % 10;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant = Unit::GetRandomInnOccupant();
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -410,9 +440,15 @@ void Grid::MapTrollsDens() {
         items_[i][j].structure = Structure(StructureType::Trolls_Den,
                                            StructureStatusType::New, owner);
         items_[i][j].colour = GridItem::colours[ColourType::Red];
-        items_[i][j].occupants.push_back(owner);
         items_[i][j].icon =
             Structure::structure_icons[StructureType::Trolls_Den];
+
+        items_[i][j].occupants.push_back(owner);
+        int num_occupants = rand() % 2;
+        for (int k = 0; k < num_occupants; k++) {
+          Unit occupant = Unit::GetRandomInnOccupant();
+          items_[i][j].occupants.push_back(occupant);
+        }
       }
     }
   }
@@ -440,6 +476,17 @@ GridItem Grid::GenerateMountainTerrain() {
   mountain_terrain.type = TerrainType::Mountain;
   mountain_terrain.temperature = temperature;
   mountain.terrain = mountain_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      mountain.occupants.push_back(occupant);
+    }
+  }
+
   return mountain;
 }
 
@@ -451,6 +498,17 @@ GridItem Grid::GenerateDesertTerrain() {
   desert_terrain.type = TerrainType::Sandy_Desert;
   desert_terrain.temperature = TemperatureType::Hot;
   desert.terrain = desert_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      desert.occupants.push_back(occupant);
+    }
+  }
+
   return desert;
 }
 
@@ -462,6 +520,17 @@ GridItem Grid::GenerateBarrenPlainsTerrain() {
   barren_plains_terrain.type = TerrainType::Barren_Plains;
   barren_plains_terrain.temperature = TemperatureType::Hot;
   barren_plains.terrain = barren_plains_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      barren_plains.occupants.push_back(occupant);
+    }
+  }
+
   return barren_plains;
 }
 
@@ -493,6 +562,17 @@ GridItem Grid::GenerateGrassyPlainsTerrain() {
   grassy_plains_terrain.type = TerrainType::Grassy_Plains;
   grassy_plains_terrain.temperature = temperature;
   grassy_plains.terrain = grassy_plains_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      grassy_plains.occupants.push_back(occupant);
+    }
+  }
+
   return grassy_plains;
 }
 
@@ -513,6 +593,17 @@ GridItem Grid::GenerateChaparralTerrain() {
   chaperral_terrain.type = TerrainType::Chaparral;
   chaperral_terrain.temperature = temperature;
   chaperral.terrain = chaperral_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      chaperral.occupants.push_back(occupant);
+    }
+  }
+
   return chaperral;
 }
 
@@ -524,6 +615,17 @@ GridItem Grid::GenerateFoothillTerrain() {
   foothill_terrain.type = TerrainType::Foothill;
   foothill_terrain.temperature = TemperatureType::Cold;
   foothill.terrain = foothill_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      foothill.occupants.push_back(occupant);
+    }
+  }
+
   return foothill;
 }
 
@@ -552,6 +654,17 @@ GridItem Grid::GenerateForestTerrain() {
   forest_terrain.type = forest_type;
   forest_terrain.temperature = TemperatureType::Temperate;
   forest.terrain = forest_terrain;
+
+  bool has_occupants = rand() % 15 == 0;
+  if (has_occupants) {
+    int num_occupants = rand() % 4;
+    Unit random_unit;
+    for (int k = 0; k < num_occupants; k++) {
+      Unit occupant(random_unit.race);
+      forest.occupants.push_back(occupant);
+    }
+  }
+
   return forest;
 }
 

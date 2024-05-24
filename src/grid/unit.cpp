@@ -253,6 +253,41 @@ Unit Unit::GetRandomGoodUnit() {
   return unit;
 }
 
+Unit Unit::GetRandomInnOccupant() {
+  int random_choice = rand() % 7;
+  RaceType race_type;
+
+  switch (random_choice) {
+  case 0:
+    race_type = RaceType::Human;
+    break;
+  case 1:
+    race_type = RaceType::Dwarf;
+    break;
+  case 2:
+    race_type = RaceType::Elf;
+    break;
+    case 3:
+    race_type = RaceType::Fairy;
+    break;
+    case 4:
+    race_type = RaceType::Gnome;
+    break;
+    case 5:
+    race_type = RaceType::ToadMan;
+    break;
+    case 6:
+    race_type = RaceType::Nymph;
+    break;
+  default:
+    race_type = RaceType::Human;
+    break;
+  }
+
+  Unit unit(race_type);
+  return unit;
+}
+
 Unit Unit::GetRandomLesserEvilUnit() {
   int random_choice = rand() % 5;
   RaceType race_type;
