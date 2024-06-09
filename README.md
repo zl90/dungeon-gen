@@ -30,9 +30,9 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 ## Ideas/TODOs
 
 - ~~Basic cursor movement + information panel.~~
-- Add occupants to terrain tiles.
+- ~~Add occupants to terrain tiles.~~
 - Add treasure/loot to terrain tiles.
-- Display occupants + treasure in the info panel.
+- ~~Display occupants in the info panel.~~
 - ~~Random name generation for Units based on RaceType.~~
 - ~~Random name generation for Structures based on StructureType and owner RaceType.~~
 - River tile generation (no clustered hotspots).
