@@ -105,7 +105,7 @@ auto Grid::DrawInfoPanel() -> void {
   int row, col;
   getmaxyx(stdscr, row, col);
   auto current_grid_tile = items_[cursor_.x][cursor_.y];
-  const int INFO_PANEL_MAX_HEIGHT = 99;
+  const int INFO_PANEL_MAX_HEIGHT = 15;
 
   init_color(1, 800, 800, 800);
   init_pair(1, 1, COLOR_BLACK);
@@ -135,25 +135,36 @@ auto Grid::DrawInfoPanel() -> void {
     }
   }
 
+  std::vector<std::string> lines;
+  lines.push_back(terrain_str);
+
   // Render new values
   int line = 1;
-  mvaddstr(items_[0].size() + top_offset_ + line++, col / 2 - items_.size() / 2,
-           terrain_str.c_str());
   if (structure_name_str.length() > 0) {
-    mvaddstr(items_[0].size() + top_offset_ + line++,
-             col / 2 - items_.size() / 2, structure_name_str.c_str());
+    lines.push_back(structure_name_str);
   }
   if (owner_name_str.length() > 0) {
-    mvaddstr(items_[0].size() + top_offset_ + line++,
-             col / 2 - items_.size() / 2, owner_name_str.c_str());
+    lines.push_back(owner_name_str);
   }
 
+  bool first_iteration = true;
   for (const auto& occupant : current_grid_tile.occupants) {
+    if (first_iteration) {
+      first_iteration = false;
+    } else {
+      occupants_str = "                 ";
+    }
     occupants_str +=
         occupant.name + " (" + Unit::race_names[occupant.race] + ")";
+    lines.push_back(occupants_str);
+  }
+
+  int num_lines_to_render =
+      std::min(static_cast<int>(lines.size()), INFO_PANEL_MAX_HEIGHT);
+
+  for (int i = 0; i < num_lines_to_render; i++) {
     mvaddstr(items_[0].size() + top_offset_ + line++,
-             col / 2 - items_.size() / 2, occupants_str.c_str());
-    occupants_str = "                 ";
+             col / 2 - items_.size() / 2, lines[i].c_str());
   }
 }
 
