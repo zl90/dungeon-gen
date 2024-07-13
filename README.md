@@ -6,6 +6,8 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 
 ![Screenshot](https://github.com/zl90/dungeon-gen/blob/main/screenshot.png?raw=true)
 
+![Screenshot 2](https://github.com/zl90/dungeon-gen/blob/main/screenshot-2.png?raw=true)
+
 ## How to play
 
 - Use the arrow keys to move the yellow cursor around the map. This lets you inspect each location on the grid.
