@@ -11,6 +11,7 @@ As of April 2024, the game is currently a very minimal immitation of the Dwarf F
 ## How to play
 
 - Use the arrow keys to move the yellow cursor around the map. This lets you inspect each location on the grid.
+- Press (i) and (k) to scroll up/down the information panel.
 
 ## How to run on Debian/Ubuntu Linux
 
