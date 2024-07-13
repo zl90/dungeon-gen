@@ -20,11 +20,16 @@ class Grid {
   auto CursorLeft() -> void;
   auto CursorRight() -> void;
 
+  auto InfoPanelCursorDown() -> void;
+  auto InfoPanelCursorUp() -> void;
+
  private:
   unsigned int width_;
   unsigned int height_;
 
-  unsigned int top_offset_ = 3;
+  const unsigned int info_panel_top_offset_ = 3;
+  const unsigned int info_panel_max_height_ = 14;
+  unsigned int info_panel_window_top_ = 0;
 
   std::vector<std::vector<GridItem>> items_;
 
@@ -35,6 +40,10 @@ class Grid {
   HeatMap terrain_heatmap_;
 
   bool is_game_running_ = true;
+
+  auto ResetInfoPanelWindow() -> void;
+  auto SetPrimaryTextColour() -> void;
+  auto SetSecondaryTextColour() -> void;
 
   auto MapBasicTerrain() -> void;
   auto MapDesertTerrain() -> void;

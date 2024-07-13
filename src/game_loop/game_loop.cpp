@@ -8,7 +8,7 @@ auto GameLoop() -> void {
   keypad(stdscr, TRUE);
   cbreak();
   noecho();
-  nodelay(stdscr, TRUE); // Enable non-blocking input
+  nodelay(stdscr, TRUE);  // Enable non-blocking input
 
   g.Draw();
   refresh();
@@ -18,23 +18,29 @@ auto GameLoop() -> void {
 
     if (input != ERR) {
       switch (input) {
-      case 'q':
-        running = false;
-        break;
-      case KEY_UP:
-        g.CursorUp();
-        break;
-      case KEY_DOWN:
-        g.CursorDown();
-        break;
-      case KEY_RIGHT:
-        g.CursorRight();
-        break;
-      case KEY_LEFT:
-        g.CursorLeft();
-        break;
-      default:
-        break;
+        case 'q':
+          running = false;
+          break;
+        case KEY_UP:
+          g.CursorUp();
+          break;
+        case KEY_DOWN:
+          g.CursorDown();
+          break;
+        case KEY_RIGHT:
+          g.CursorRight();
+          break;
+        case KEY_LEFT:
+          g.CursorLeft();
+          break;
+        case 'i':
+          g.InfoPanelCursorUp();
+          break;
+        case 'k':
+          g.InfoPanelCursorDown();
+          break;
+        default:
+          break;
       }
     }
 

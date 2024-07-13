@@ -71,6 +71,8 @@ Grid::Grid(unsigned int width, unsigned int height)
   MapPits();
 }
 
+auto Grid::ResetInfoPanelWindow() -> void { info_panel_window_top_ = 0; }
+
 auto Grid::IsGameRunning() -> bool { return is_game_running_; }
 
 void Grid::CursorDown() {
@@ -78,6 +80,7 @@ void Grid::CursorDown() {
     cursor_.y++;
     cursor_.RefreshBlinkTimer();
   }
+  ResetInfoPanelWindow();
 }
 
 void Grid::CursorUp() {
@@ -85,6 +88,7 @@ void Grid::CursorUp() {
     cursor_.y--;
     cursor_.RefreshBlinkTimer();
   }
+  ResetInfoPanelWindow();
 }
 
 void Grid::CursorLeft() {
@@ -92,6 +96,7 @@ void Grid::CursorLeft() {
     cursor_.x--;
     cursor_.RefreshBlinkTimer();
   }
+  ResetInfoPanelWindow();
 }
 
 void Grid::CursorRight() {
@@ -99,22 +104,26 @@ void Grid::CursorRight() {
     cursor_.x++;
     cursor_.RefreshBlinkTimer();
   }
+  ResetInfoPanelWindow();
+}
+
+void Grid::InfoPanelCursorDown() { info_panel_window_top_++; }
+
+void Grid::InfoPanelCursorUp() {
+  if (info_panel_window_top_ > 0) {
+    info_panel_window_top_--;
+  }
 }
 
 auto Grid::DrawInfoPanel() -> void {
   int row, col;
   getmaxyx(stdscr, row, col);
   auto current_grid_tile = items_[cursor_.x][cursor_.y];
-  const int INFO_PANEL_MAX_HEIGHT = 15;
-
-  init_color(1, 800, 800, 800);
-  init_pair(1, 1, COLOR_BLACK);
-
-  attron(COLOR_PAIR(selected_colour_pair_));
 
   // Clear previous values
-  for (int i = 1; i <= INFO_PANEL_MAX_HEIGHT; i++) {
-    mvaddstr(items_[0].size() + top_offset_ + i, col / 2 - items_.size() / 2,
+  for (int i = 0; i <= info_panel_max_height_ + 1; i++) {
+    mvaddstr(items_[0].size() + info_panel_top_offset_ + i,
+             col / 2 - items_.size() / 2,
              std::string(items_.size(), ' ').c_str());
   }
 
@@ -139,7 +148,6 @@ auto Grid::DrawInfoPanel() -> void {
   lines.push_back(terrain_str);
 
   // Render new values
-  int line = 1;
   if (structure_name_str.length() > 0) {
     lines.push_back(structure_name_str);
   }
@@ -159,13 +167,68 @@ auto Grid::DrawInfoPanel() -> void {
     lines.push_back(occupants_str);
   }
 
-  int num_lines_to_render =
-      std::min(static_cast<int>(lines.size()), INFO_PANEL_MAX_HEIGHT);
+  bool can_scroll_down = false;
+  bool can_scroll_up = false;
+  if (lines.size() > info_panel_max_height_) {
+    info_panel_window_top_ = std::min(
+        info_panel_window_top_,
+        static_cast<unsigned int>(lines.size() - info_panel_max_height_));
 
-  for (int i = 0; i < num_lines_to_render; i++) {
-    mvaddstr(items_[0].size() + top_offset_ + line++,
-             col / 2 - items_.size() / 2, lines[i].c_str());
+    if (info_panel_window_top_ > 0) {
+      can_scroll_up = true;
+    }
+
+    if (info_panel_window_top_ + info_panel_max_height_ < lines.size()) {
+      can_scroll_down = true;
+    }
+  } else {
+    info_panel_window_top_ = 0;
   }
+
+  if (can_scroll_up) {
+    int y = items_[0].size() + info_panel_top_offset_;
+    int x = col / 2 - static_cast<int>(items_.size()) / 2;
+    std::string info_text = "~~~ Press (i) to scroll ↑ ~~~";
+
+    SetSecondaryTextColour();
+
+    mvaddstr(y, x, info_text.c_str());
+
+    UnsetColour();
+  }
+
+  SetPrimaryTextColour();
+
+  attron(COLOR_PAIR(selected_colour_pair_));
+
+  int num_lines_to_render =
+      std::min(static_cast<int>(lines.size() - info_panel_window_top_),
+               static_cast<int>(info_panel_max_height_));
+
+  int line = 1;
+  for (int i = info_panel_window_top_;
+       i < info_panel_window_top_ + num_lines_to_render; i++) {
+    int y = items_[0].size() + info_panel_top_offset_ + line++;
+    int x = col / 2 - static_cast<int>(items_.size()) / 2;
+    mvaddstr(y, x, lines[i].c_str());
+  }
+
+  UnsetColour();
+
+  if (can_scroll_down) {
+    int y =
+        items_[0].size() + info_panel_top_offset_ + info_panel_max_height_ + 1;
+    int x = col / 2 - static_cast<int>(items_.size()) / 2;
+    std::string info_text = "~~~ Press (k) to scroll ↓ ~~~";
+
+    SetSecondaryTextColour();
+
+    mvaddstr(y, x, info_text.c_str());
+
+    UnsetColour();
+  }
+
+  SetPrimaryTextColour();
 }
 
 void Grid::Draw() {
@@ -175,7 +238,7 @@ void Grid::Draw() {
   for (int y = 0; y < items_[0].size(); y++) {
     for (int x = 0; x < items_.size(); x++) {
       SetColourForItem(items_[x][y], x, y);
-      mvaddwstr(top_offset_ + y, col / 2 - items_.size() / 2 + x,
+      mvaddwstr(info_panel_top_offset_ + y, col / 2 - items_.size() / 2 + x,
                 items_[x][y].icon);
       UnsetColour();
     }
@@ -733,4 +796,26 @@ void Grid::SetColourForItem(GridItem item, int x, int y) {
 void Grid::UnsetColour() {
   attroff(COLOR_PAIR(selected_colour_pair_));
   selected_colour_pair_ = 1;
+}
+
+void Grid::SetPrimaryTextColour() {
+  int r = 800;
+  int g = 800;
+  int b = 800;
+  selected_colour_pair_ = 242;
+  const int COLOUR_TEXT = COLOR_WHITE + selected_colour_pair_;
+  init_color(COLOUR_TEXT, r, g, b);
+  init_pair(selected_colour_pair_, COLOUR_TEXT, COLOR_BLACK);
+  attron(COLOR_PAIR(selected_colour_pair_));
+}
+
+void Grid::SetSecondaryTextColour() {
+  int r = 500;
+  int g = 500;
+  int b = 900;
+  selected_colour_pair_ = 241;
+  const int COLOUR_TEXT = COLOR_WHITE + selected_colour_pair_;
+  init_color(COLOUR_TEXT, r, g, b);
+  init_pair(selected_colour_pair_, COLOUR_TEXT, COLOR_BLACK);
+  attron(COLOR_PAIR(selected_colour_pair_));
 }
